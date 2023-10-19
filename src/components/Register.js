@@ -72,6 +72,7 @@ const initialFormData = Object.freeze({
   ipn: '',
   region: '',
   community: '',
+  dateRecording: '',
   recordingTime: ''
 });
 
@@ -289,19 +290,21 @@ export const Form = () => {
                 <DemoItem >
                   <MobileDatePicker
                     label="Оберіть дату *"
-                    {...register("dateRecording")}
-                    value={value}
-                    onChange={(newValue) => setValue(newValue)}
-
+                    name = "dateRecording"
                     id="dateRecording"
+                  // {...register("dateRecording")}
+                    //value={formData.dateRecording}
+                    // onChange={handleChange}
+
+
                     // onError={(newError) => setError(newError)}
                     // error={errors.dateRecording ? true : false}
                     // helperText={ errors.dateRecording?.message }  
-                    slotProps={{
-                      textField: {
-                        helperText: errors.dateRecording?.message,
-                      },
-                    }}
+                    // slotProps={{
+                    //   textField: {
+                    //     helperText: errors.dateRecording?.message,
+                    //   },
+                    // }}
                   />
                 </DemoItem>
               </LocalizationProvider>

@@ -101,14 +101,14 @@ export const ElectronicCoupon = () => {
             justifyContent="center"
             alignItems="center"
           >
-            <Button
+            <a href={`${baseURL}/applications/${id}/pdf`}><Button
               type="submit"
               size="large"
               variant="contained"
               sx={{ mt: 1, mb: 1, pr: 9, pl: 9, borderRadius: 2 }}
             >
               Зберегти
-            </Button>
+            </Button></a>       
           </Grid>
 
           <Grid
@@ -121,12 +121,11 @@ export const ElectronicCoupon = () => {
               size="large"
               variant="contained"
               sx={{ mt: 1, mb: 1, borderRadius: 2 }}
-              onClick={handleClick}
             >
               Надіслати на пошту
             </Button>
 
-            {/* <a href={`${baseURL}/applications/${id}/pdf`}>Завантажити пдф</a> */}
+            
           </Grid>
         </Container>
 
