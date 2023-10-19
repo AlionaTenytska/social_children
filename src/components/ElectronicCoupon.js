@@ -1,30 +1,45 @@
 import * as React from 'react';
-import { Button, TableContainer, TextField, Box, Typography, Container, Grid, Paper, Table, TableBody, TableCell, TableRow} from '@mui/material';
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import { Button, TableContainer, TextField, Box, Typography, Container, Grid, Paper, Table, TableBody, TableCell, TableRow } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import * as Yup from 'yup';
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
-import { PDFDownloadLink } from "@react-pdf/renderer";
 import { Header } from './Header'
-import MyDocument from './PDF';
 import { Theme } from './Theme'
 
+const baseURL = 'http://127.0.0.1:8000/api'
 
 function createData(name, data) {
   return { name, data };
 }
 
-const rows = [
-  createData('Прізвище:', 'Іванов'),
-  createData("Ім'я:", 'Іван'),
-  createData("По-батькові:", 'Іванович'),
-  createData('РНОКПП (ІПН):', '3668506726'),
-  createData('Дата:', '19.10.2023'),
-  createData('Час:', '9:00'),
-];
+const id = 2;
 
 
 export const ElectronicCoupon = () => {
+
+  let params = useParams();
+  const [userData, setUserData] = React.useState([]);
+
+  React.useEffect(() => {
+    const expensesListResp = async () => {
+      await axios.get(`${baseURL}/applications/${params.id}`)
+        .then(
+          response => setUserData(response.data))
+    }
+    expensesListResp();
+  }, []);
+
+  const rows = [
+    createData('Прізвище:', userData.surname),
+    createData("Ім'я:", userData.name),
+    createData("По-батькові:", userData.patronymic),
+    createData('РНОКПП (ІПН):', userData.number),
+    createData('Дата:', '19.10.2023'),
+    createData('Час:', userData.time),
+  ];
 
   const ref = React.useRef(null);
 
@@ -86,18 +101,14 @@ export const ElectronicCoupon = () => {
             justifyContent="center"
             alignItems="center"
           >
-            <PDFDownloadLink
-              document={<MyDocument />}
-              fileName="coupon.pdf"
-            ><Button
+            <Button
               type="submit"
               size="large"
               variant="contained"
               sx={{ mt: 1, mb: 1, pr: 9, pl: 9, borderRadius: 2 }}
             >
-                Зберегти
-              </Button>
-            </PDFDownloadLink>
+              Зберегти
+            </Button>
           </Grid>
 
           <Grid
@@ -114,9 +125,11 @@ export const ElectronicCoupon = () => {
             >
               Надіслати на пошту
             </Button>
+
+            {/* <a href={`${baseURL}/applications/${id}/pdf`}>Завантажити пдф</a> */}
           </Grid>
         </Container>
-        
+
         <Container maxWidth="sm" ref={ref} sx={{ mb: 4, mt: 4, display: isActive ? '' : 'none' }}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={8}>

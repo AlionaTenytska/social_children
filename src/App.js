@@ -10,7 +10,7 @@ function App() {
     <div>
       <Routes>
         <Route path="/" exact element={<Form />} />
-        <Route path="/coupon" element={<ElectronicCoupon />} />
+        <Route path="/coupon/:id" element={<ElectronicCoupon />} />
       </Routes>
 
     </div>

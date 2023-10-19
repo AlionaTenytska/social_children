@@ -1,4 +1,5 @@
 import * as React from 'react';
+import axios from "axios";
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
@@ -12,6 +13,7 @@ import * as Yup from 'yup';
 import { Header } from './Header'
 import { Theme } from './Theme'
 
+const baseURL = 'http://127.0.0.1:8000/api/applications'
 
 const names_districs = [
   'Сумський район',
@@ -128,10 +130,22 @@ export const Form = () => {
   };
 
   const handleSubmit = (e) => {
-    navigate('/coupon');
+
     e.preventDefault()
-    console.log(formData);
-    // ... submit to API or something
+
+    const userData = {
+      name: formData.name,
+      surname: formData.surname,
+      patronymic: formData.fatherly,
+      number: formData.ipn,
+      locality: formData.region,
+      community_id: 1,
+      date: '19.10.2023',
+      time: formData.recordingTime
+    }
+    axios.post(baseURL, userData).then((response) => {
+      navigate(`/coupon/${response.data.id}`);
+    });
   };
 
   return (
