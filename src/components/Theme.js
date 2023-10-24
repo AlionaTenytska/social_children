@@ -15,6 +15,9 @@ const defaultTheme = createTheme(
         Button: {
             size: 'large',
         },
+        MuiStepper: {
+            fontSize: '1rem'
+        }
     }
 );
 
