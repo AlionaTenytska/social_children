@@ -4,7 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { DemoItem } from '@mui/x-date-pickers/internals/demo';
-import { Button, CssBaseline, TextField, Box, Typography, Container, Select, InputLabel, MenuItem, useTheme, OutlinedInput, FormControl, Grid, FormHelperText, Stepper, Step, StepLabel, StepContent, Paper } from '@mui/material';
+import { Button, CssBaseline, TextField, Box, Typography, Container, Select, InputLabel, MenuItem, useTheme, OutlinedInput, FormControl, Grid, FormHelperText, Stepper, Step, StepLabel, StepContent, Paper, RadioGroup, FormControlLabel, FormLabel, Radio } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
@@ -13,6 +13,8 @@ import * as Yup from 'yup';
 import { Header } from './Header'
 import { Theme } from './Theme'
 import { lightGreen } from '@mui/material/colors';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 
 const baseURL = 'http://127.0.0.1:8000/api/applications'
 
@@ -176,6 +178,20 @@ export const Form = () => {
     setActiveStep(0);
   };
 
+  const [state, setState] = React.useState();
+  function handleChangeRadio(event) {
+    setState(event.target.value);
+    console.log(state);
+ }
+
+ const [isShown, setIsShown] = React.useState(false);
+
+ function handleClickRadio (event) {
+  
+  setIsShown(true);
+}
+
+
   return (
     <Theme>
       <CssBaseline />
@@ -196,46 +212,42 @@ export const Form = () => {
           ".Mui-disabled .css-114vcqt-MuiStepLabel-label": {
             fontSize: 16,
           },
+          ".Mui-completed .css-114vcqt-MuiStepLabel-label": {
+            fontSize: 16,
+          },
           ".css-14yr603-MuiStepContent-root": {
             borderLeft: '2px solid rgba(50,84,255,1)',
             marginLeft: '15px',
-
           },
           ".css-8t49rw-MuiStepConnector-line": {
             borderLeft: '2px solid rgba(50,84,255,1)',
             marginLeft: '3px',
           },
-          ".MuiSvgIcon-root": {
+          ".MuiStepLabel-iconContainer .MuiSvgIcon-root": {
             borderRadius: "50%",
             border: "1px solid rgba(50,84,255,1)"
           },
-          ".MuiSvgIcon-root:not(.Mui-completed)": {
+          ".MuiStepLabel-iconContainer .MuiSvgIcon-root:not(.Mui-completed)": {
             color: "white"
           },
-          ".MuiStepIcon-text": {
+          ".MuiStepLabel-iconContainer .MuiStepIcon-text": {
             fill: "rgba(50,84,255,1)",
             fontWeight: 500
           },
-          ".MuiSvgIcon-root.Mui-active": {
+          ".MuiStepLabel-iconContainer .MuiSvgIcon-root.Mui-active": {
             color: "rgba(50,84,255,1)",
             padding: "3px",
             borderRadius: "50%",
             border: "1px solid rgba(50,84,255,1)",
             marginY: "-3px"
           },
-          ".Mui-active .MuiStepIcon-text": {
+          ".MuiStepLabel-iconContainer .Mui-active .MuiStepIcon-text": {
             fill: "white"
           }
         }}>
           {steps.map((step, index) => (
             <Step key={step.label}>
-              <StepLabel
-                optional={
-                  index === 2 ? (
-                    <Typography variant="caption">Last step</Typography>
-                  ) : null
-                }
-              >
+              <StepLabel>
                 {step.label}
               </StepLabel>
 
@@ -325,6 +337,162 @@ export const Form = () => {
                 {index === 1 ? (
                   <Box>
                     <Grid container spacing={4}>
+
+                      <Grid item xs={12} sm={6} >
+                        <FormControl>
+                          {/* <FormLabel id="demo-radio-buttons-group-label">Оберіть підставу для отримання статусу дитини, яка постраждала внаслідок воєнних дій та збройних конфліктів: </FormLabel> */}
+                          <RadioGroup
+                            aria-labelledby="demo-radio-buttons-group-label"
+                            name="radio-buttons-group"
+                            onChange={handleChangeRadio}
+                            onClick={handleClickRadio}
+                          >
+                            <FormControlLabel value="wound" control={<Radio />} label="Отримали поранення, контузію, каліцтво" />
+                            <FormControlLabel value="violence" control={<Radio />} label="Зазнали фізичного, сексуального насильства" />
+                            <FormControlLabel value="stolen" control={<Radio />} label="Були викрадені або незаконно вивезені за межі України" />
+                            <FormControlLabel value="participation" control={<Radio />} label="Залучалися до участі у діях воєнізованих чи збройних формувань" />
+                            <FormControlLabel value="maintenance" control={<Radio />} label="Незаконно утримувалися, у тому числі в полоні" />
+                            <FormControlLabel value="psychological" control={<Radio />} label="Зазнали психологічного насильства" />
+                          </RadioGroup>
+                        </FormControl>
+                      </Grid>
+                      
+                      <Grid item xs={12} sm={6}>
+                      {isShown && state === 'wound' ? (
+                        <Paper elevation={3} sx={{p: 2}}>
+                          <Typography  align='center' color="inherit" sx={{ fontSize: 16, fontWeight: 700, mb:1 }}>
+                          Для надання статусу необхідний перелік документів:
+                          </Typography>
+                          <Typography sx={{ fontSize: 16  }}>
+                          — свідоцтва про народження дитини або іншого документа, що посвідчує особу дитини;
+                          </Typography>
+                          <Typography>
+                          — документа, що посвідчує особу заявника;
+                          </Typography>
+                          <Typography>
+                          — документа, що підтверджує повноваження законного представника дитини або родинні стосунки між дитиною та заявником;
+                          </Typography>
+                          <Typography>
+                          — довідки про взяття дитини на облік як внутрішньо переміщеної особи (у разі наявності);
+                          </Typography>
+                          <Typography>
+                          — паспорта громадянина України, виготовленого у формі книжечки (у разі наявності);
+                          </Typography>
+                          <Typography>
+                          — паспорта громадянина України або паспорта громадянина України для виїзду за кордон у формі е-паспорта або е-паспорта для виїзду за кордон (у разі наявності);
+                          </Typography>
+                          <Typography>
+                          — витягу з реєстру територіальної громади (у разі наявності);
+                          </Typography>
+                          <Typography>
+                          — виписки з медичної картки дитини або консультаційного висновку спеціаліста, видані після медичного обстеження та лікування дитини в закладах охорони здоров’я та науково-дослідних установах, визначених МОЗ, із зазначенням діагнозу згідно з Міжнародною класифікацією хвороб та споріднених проблем здоров’я десятого перегляду, отриманих у період здійснення воєнних дій, збройних конфліктів.
+                          </Typography>
+                        </Paper>
+                           ) : false}
+
+                      {isShown && state === 'violence' ? (
+                        <Paper elevation={3} sx={{p: 2}}>
+                          <Typography  align='center' color="inherit" sx={{ fontSize: 16, fontWeight: 700, mb:1 }}>
+                          Для надання статусу необхідний перелік документів:
+                          </Typography>
+                          <Typography sx={{ fontSize: 16  }}>
+                          — свідоцтва про народження дитини або іншого документа, що посвідчує особу дитини;
+                          </Typography>
+                          <Typography>
+                          — документа, що посвідчує особу заявника;
+                          </Typography>
+                          <Typography>
+                          — документа, що підтверджує повноваження законного представника дитини або родинні стосунки між дитиною та заявником;
+                          </Typography>
+                          <Typography>
+                          — довідки про взяття дитини на облік як внутрішньо переміщеної особи (у разі наявності);
+                          </Typography>
+                          <Typography>
+                          — паспорта громадянина України, виготовленого у формі книжечки (у разі наявності);
+                          </Typography>
+                          <Typography>
+                          — паспорта громадянина України або паспорта громадянина України для виїзду за кордон у формі е-паспорта або е-паспорта для виїзду за кордон (у разі наявності);
+                          </Typography>
+                          <Typography>
+                          — витягу з реєстру територіальної громади (у разі наявності);
+                          </Typography>
+                          <Typography>
+                          — заяви про вчинення щодо дитини кримінального правопорушення або про залучення дитини до провадження як потерпілої, зареєстрованої в установленому порядку у відповідних правоохоронних органах;
+                          </Typography>
+                          <Typography>
+                          — витягу з Єдиного реєстру досудових розслідувань про відкриття кримінального провадження (назалежно від результатів досудового розслідування) за зазначеною заявою про вчинення злочину щодо дитини в зоні воєнних дій та збройних конфліктів;
+                          </Typography>
+                          <Typography>
+                          — висновку експерта за результатами судової експертизи (за наявності), проведеної в ході досудового розслідування в кримінальному провадженні, якою встановлено факти фізичного, сексуального насильства щодо дитини внаслідок воєнних дій та збройних конфліктів.
+                          </Typography>
+                        </Paper>
+                           ) : false}
+                       {isShown && state === 'stolen' || state === 'participation' || state === 'maintenance'  ? (
+                        <Paper elevation={3} sx={{p: 2}}>
+                          <Typography  align='center' color="inherit" sx={{ fontSize: 16, fontWeight: 700, mb:1 }}>
+                          Для надання статусу необхідний перелік документів:
+                          </Typography>
+                          <Typography sx={{ fontSize: 16  }}>
+                          — свідоцтва про народження дитини або іншого документа, що посвідчує особу дитини;
+                          </Typography>
+                          <Typography>
+                          — документа, що посвідчує особу заявника;
+                          </Typography>
+                          <Typography>
+                          — документа, що підтверджує повноваження законного представника дитини (у разі коли дитина постійно проживає/перебуває у закладі охорони здоров’я, закладі освіти або іншому дитячому закладі, - документа, що підтверджує факт перебування дитини в такому закладі) або родинні стосунки між дитиною та заявником;
+                          </Typography>
+                          <Typography>
+                          — довідки про взяття дитини на облік як внутрішньо переміщеної особи (у разі наявності);
+                          </Typography>
+                          <Typography>
+                          — паспорта громадянина України, виготовленого у формі книжечки (у разі наявності);
+                          </Typography>
+                          <Typography>
+                          — паспорта громадянина України або паспорта громадянина України для виїзду за кордон у формі е-паспорта або е-паспорта для виїзду за кордон (у разі наявності);
+                          </Typography>
+                          <Typography>
+                          — витягу з реєстру територіальної громади (у разі наявності);
+                          </Typography>
+                          <Typography>
+                          — заяви про вчинення щодо дитини кримінального правопорушення або про залучення дитини до провадження як потерпілої, зареєстрованої в установленому порядку у відповідних правоохоронних органах;
+                          </Typography>
+                          <Typography>
+                          — витягу з Єдиного реєстру досудових розслідувань про відкриття кримінального провадження (назалежно від результатів досудового розслідування) за зазначеною заявою про вчинення злочину щодо дитини в зоні воєнних дій та збройних конфліктів.
+                          </Typography>
+                        </Paper>
+                           ) : false}
+                      {isShown && state === 'psychological' ? (
+                        <Paper elevation={3} sx={{p: 2}}>
+                          <Typography  align='center' color="inherit" sx={{ fontSize: 16, fontWeight: 700, mb:1 }}>
+                          Для надання статусу необхідний перелік документів:
+                          </Typography>
+                          <Typography sx={{ fontSize: 16  }}>
+                          — свідоцтва про народження дитини або іншого документа, що посвідчує особу дитини;
+                          </Typography>
+                          <Typography>
+                          — документа, що посвідчує особу заявника;
+                          </Typography>
+                          <Typography>
+                          — документа, що підтверджує повноваження законного представника дитини або родинні стосунки між дитиною та заявником;
+                          </Typography>
+                          <Typography>
+                          — довідки про взяття дитини на облік як внутрішньо переміщеної особи (у разі наявності);
+                          </Typography>
+                          <Typography>
+                          — паспорта громадянина України, виготовленого у формі книжечки (у разі наявності);
+                          </Typography>
+                          <Typography>
+                          — паспорта громадянина України або паспорта громадянина України для виїзду за кордон у формі е-паспорта або е-паспорта для виїзду за кордон (у разі наявності);
+                          </Typography>
+                          <Typography>
+                          — витягу з реєстру територіальної громади (у разі наявності);
+                          </Typography>
+                          <Typography>
+                          — висновок оцінки потреб сім’ї (особи) у соціальних послугах, підготовлений центром соціальних служб для сім’ї, дітей та молоді за формою, затвердженою Мінсоцполітики.
+                          </Typography>
+                        </Paper>
+                           ) : false}
+                      </Grid>
 
                     </Grid>
                     <div>
