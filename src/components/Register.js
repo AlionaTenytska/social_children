@@ -4,19 +4,15 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { DemoItem } from '@mui/x-date-pickers/internals/demo';
-import { Button, CssBaseline, TextField, Box, Typography, Container, Select, InputLabel, MenuItem, useTheme, OutlinedInput, FormControl, Grid, FormHelperText, Stepper, Step, StepLabel, StepContent, Paper, RadioGroup, FormControlLabel, FormLabel, Radio, Checkbox, FormGroup } from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Button, CssBaseline, TextField, Box, Typography, Container, Select, InputLabel, MenuItem, OutlinedInput, FormControl, Grid, FormHelperText, Stepper, Step, StepLabel, StepContent, Paper, RadioGroup, FormControlLabel, FormLabel, Radio, Checkbox, FormGroup } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { Header } from './Header'
 import { Theme } from './Theme'
-import { lightGreen } from '@mui/material/colors';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 
-const baseURL = 'http://127.0.0.1:8000/api/applications'
+const baseURL = 'http://127.0.0.1:8000/api'
 
 const names_districs = [
   'Сумський район',
@@ -59,7 +55,7 @@ function isValidIPN(message) {
   return this.test("isValidIPN", message, function (value) {
     const { path, createError } = this;
 
-    if (value.length == 10) {
+    if (value.length === 10) {
       let newArray = [];
       for (var i of value) {
         newArray.push(i);
@@ -69,7 +65,7 @@ function isValidIPN(message) {
 
       let sum = newArray.reduce(function (r, a, i) { return r + a * arr[i] }, 0);
       let remainder = sum % 11;
-      if (remainder == 10) {
+      if (remainder === 10) {
         remainder = 0;
       }
       if (remainder != number) {
@@ -91,6 +87,14 @@ const initialFormData = Object.freeze({
   dateRecording: '',
   recordingTime: ''
 });
+
+let regions = [];
+
+axios.get(`${baseURL}/regions`)
+.then(
+  regions = respons.data)
+
+  console.log(regions)
 
 export const Form = () => {
 
@@ -140,7 +144,6 @@ export const Form = () => {
   });
 
 
-  const theme = useTheme();
   const [value, setValue] = React.useState([]); // Для дати, поки не видаляю
 
   const handleChange = ({ target: { name, value } }) => {
@@ -161,10 +164,33 @@ export const Form = () => {
       date: '19.10.2023',
       time: formData.recordingTime
     }
-    axios.post(baseURL, userData).then((response) => {
+    axios.post(`${baseURL}/applications`, userData).then((response) => {
       navigate(`/coupon/${response.data.id}`);
     });
   };
+
+
+  const [reg, setReg] = React.useState([]);
+
+  // React.useEffect(() => {
+     
+    // }, []);
+
+
+
+  // React.useEffect(() => {
+  //   const fetchData = async () => {
+  //     const result = await axios(`${baseURL}/regions`);
+  //     setReg(result.data);
+  //   };
+  //   fetchData();
+  // }, []);
+
+  console.log(reg);
+  
+  // reg.map((r)=>(
+  //   console.log(r.title)
+  // ));
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -174,22 +200,37 @@ export const Form = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleReset = () => {
-    setActiveStep(0);
-  };
 
   const [state, setState] = React.useState();
   function handleChangeRadio(event) {
     setState(event.target.value);
-    console.log(state);
+    // console.log(state);
   }
 
   const [isShown, setIsShown] = React.useState(false);
 
-  function handleClickRadio(event) {
-
+  function handleClickRadio() {
     setIsShown(true);
   }
+
+  const [assesAct, setAssesAct] = React.useState(false);
+  function handleClickAssesAct() {
+    setAssesAct(!assesAct);
+  }
+
+  const [conclusion, setConclusion] = React.useState(false);
+  function handleClickConclusion() {
+    setConclusion(!conclusion);
+  }
+
+  const [personData, setPersonData] = React.useState(false);
+  function handleClickPersonData() {
+    setPersonData(!personData);
+  }
+
+
+
+
 
 
   return (
@@ -327,6 +368,7 @@ export const Form = () => {
                         variant="contained"
                         onClick={handleNext}
                         size="large"
+                        // disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.fatherly || !formData.name}
                         sx={{ mt: 2, pr: 4, pl: 4, borderRadius: 2 }}
                       >
                         Далі
@@ -347,19 +389,19 @@ export const Form = () => {
                             onChange={handleChangeRadio}
                             onClick={handleClickRadio}
                           >
-                            <FormControlLabel value="wound" control={<Radio />} label="Отримали поранення, контузію, каліцтво" />
-                            <FormControlLabel value="violence" control={<Radio />} label="Зазнали фізичного, сексуального насильства" />
-                            <FormControlLabel value="stolen" control={<Radio />} label="Були викрадені або незаконно вивезені за межі України" />
-                            <FormControlLabel value="participation" control={<Radio />} label="Залучалися до участі у діях воєнізованих чи збройних формувань" />
-                            <FormControlLabel value="maintenance" control={<Radio />} label="Незаконно утримувалися, у тому числі в полоні" />
-                            <FormControlLabel value="psychological" control={<Radio />} label="Зазнали психологічного насильства" />
+                            <FormControlLabel value="wound" control={<Radio checked = {true ? (state === 'wound'): false} />} label="Отримали поранення, контузію, каліцтво" />
+                            <FormControlLabel value="violence" control={<Radio checked = {true ? (state === 'violence'): false} />} label="Зазнали фізичного, сексуального насильства" />
+                            <FormControlLabel value="stolen" control={<Radio checked = {true ? (state === 'stolen'): false} />} label="Були викрадені або незаконно вивезені за межі України" />
+                            <FormControlLabel value="participation" control={<Radio checked = {true ? (state === 'participation'): false} />} label="Залучалися до участі у діях воєнізованих чи збройних формувань" />
+                            <FormControlLabel value="maintenance" control={<Radio checked = {true ? (state === 'maintenance'): false} />} label="Незаконно утримувалися, у тому числі в полоні" />
+                            <FormControlLabel value="psychological" control={<Radio checked = {true ? (state === 'psychological'): false} />} label="Зазнали психологічного насильства" />
                           </RadioGroup>
                         </FormControl>
                         {isShown && state === 'psychological' ? (
                         <FormGroup>
                           <FormLabel sx={{ mt: 2 }}>Відмітьте наявніть наступних документів: </FormLabel>
-                          <FormControlLabel required control={<Checkbox />} label="Акт оцінки потреб сім’ї " />
-                          <FormControlLabel required control={<Checkbox />} label="Висновок оцінки потреби сім’ї " />
+                          <FormControlLabel required control={<Checkbox checked={assesAct} onClick={handleClickAssesAct}/>} label="Акт оцінки потреб сім’ї " />
+                          <FormControlLabel required control={<Checkbox checked={conclusion} onClick={handleClickConclusion}/>} label="Висновок оцінки потреби сім’ї " />
                         </FormGroup>
                         ) : false}
                       </Grid>
@@ -509,6 +551,9 @@ export const Form = () => {
                       <Button
                         variant="contained"
                         onClick={handleNext}
+                        disabled={
+                          !state || ((state === 'psychological' && (assesAct === false || conclusion === false))?(true) : false)
+                        }
                         size="large"
                         sx={{ mt: 2, pr: 4, pl: 4, borderRadius: 2 }}
                       >
@@ -543,14 +588,23 @@ export const Form = () => {
                             input={<OutlinedInput label="Оберіть район *" />}
                             error={errors.region ? true : false}
                           >
-                            {names_districs.map((names_districs) => (
+                            {/* {names_districs.map((names_districs) => (
                               <MenuItem
                                 key={names_districs}
                                 value={names_districs}
                               >
                                 {names_districs}
                               </MenuItem>
-                            ))}
+                            ))} */}
+
+                            {/* {reg.map((r) => (
+                              <MenuItem
+                                key={r.id}
+                                value={r.title}
+                              >
+                                {r.title}
+                              </MenuItem>
+                            ))} */}
                           </Select>
                           <FormHelperText sx={{ color: "#bf3333" }}>
                             {errors.region?.message}
@@ -615,7 +669,7 @@ export const Form = () => {
 
                         </Box>
                         <FormGroup sx = {{mt:1}}>
-                          <FormControlLabel required control={<Checkbox />} label="Даю згоду на обробку персональних даних " />
+                          <FormControlLabel required control={<Checkbox checked={personData} onClick={handleClickPersonData}/>} label="Даю згоду на обробку персональних даних " />
                       </FormGroup>
                       </Grid>
 
@@ -651,7 +705,7 @@ export const Form = () => {
                     <div>
                       <Button
                         onClick={handleSubmit}
-                        disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.fatherly || !formData.name || !formData.ipn || !formData.community || !formData.region || !formData.recordingTime}
+                        disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.fatherly || !formData.name || !formData.ipn || !formData.community || !formData.region || !formData.recordingTime || personData === false || !state || ((state === 'psychological' && (assesAct === false || conclusion === false))?(true) : false)}
                         type="submit"
                         size="large"
                         variant="contained"
@@ -660,7 +714,6 @@ export const Form = () => {
                         Записатися
                       </Button>
                       <Button
-                        // disabled={index === 0}
                         onClick={handleBack}
                         size="large"
                         sx={{ mt: 2, pr: 4, pl: 4, borderRadius: 2 }}
@@ -676,31 +729,6 @@ export const Form = () => {
             </Step>
           ))}
         </Stepper>
-        {/* {activeStep === steps.length && (
-          <Paper square elevation={0} sx={{ p: 3 }}> */}
-        {/* <Typography>All steps completed - you&apos;re finished</Typography> */}
-        {/* <Button onClick={handleReset} sx={{ mt: 1, mr: 1 }}>
-              Reset
-            </Button>
-          </Paper>
-        )} */}
-
-
-        {/* <Grid
-          container
-          justifyContent="center"
-          alignItems="center">
-          <Button
-            onClick={handleSubmit}
-            disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.fatherly || !formData.name || !formData.ipn || !formData.community || !formData.region || !formData.recordingTime}
-            type="submit"
-            size="large"
-            variant="contained"
-            sx={{ mt: 4, mb: 2, pr: 6, pl: 6, borderRadius: 2 }}
-          >
-            Записатися
-          </Button>
-        </Grid> */}
       </Container>
     </Theme>
   );
