@@ -11,6 +11,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { Header } from './Header'
 import { Theme } from './Theme'
+import { Controller } from "react-hook-form";
 
 const baseURL = 'http://127.0.0.1:8000/api'
 
@@ -84,17 +85,17 @@ const initialFormData = Object.freeze({
   ipn: '',
   region: '',
   community: '',
-  dateRecording: '',
+  dateRecording: null,
   recordingTime: ''
 });
 
 let regions = [];
 
-axios.get(`${baseURL}/regions`)
-.then(
-  regions = respons.data)
+// axios.get(`${baseURL}/regions`)
+// .then(
+//   regions = respons.data)
 
-  console.log(regions)
+//   console.log(regions)
 
 export const Form = () => {
 
@@ -173,8 +174,8 @@ export const Form = () => {
   const [reg, setReg] = React.useState([]);
 
   // React.useEffect(() => {
-     
-    // }, []);
+
+  // }, []);
 
 
 
@@ -187,7 +188,7 @@ export const Form = () => {
   // }, []);
 
   console.log(reg);
-  
+
   // reg.map((r)=>(
   //   console.log(r.title)
   // ));
@@ -204,7 +205,6 @@ export const Form = () => {
   const [state, setState] = React.useState();
   function handleChangeRadio(event) {
     setState(event.target.value);
-    // console.log(state);
   }
 
   const [isShown, setIsShown] = React.useState(false);
@@ -389,20 +389,20 @@ export const Form = () => {
                             onChange={handleChangeRadio}
                             onClick={handleClickRadio}
                           >
-                            <FormControlLabel value="wound" control={<Radio checked = {true ? (state === 'wound'): false} />} label="Отримали поранення, контузію, каліцтво" />
-                            <FormControlLabel value="violence" control={<Radio checked = {true ? (state === 'violence'): false} />} label="Зазнали фізичного, сексуального насильства" />
-                            <FormControlLabel value="stolen" control={<Radio checked = {true ? (state === 'stolen'): false} />} label="Були викрадені або незаконно вивезені за межі України" />
-                            <FormControlLabel value="participation" control={<Radio checked = {true ? (state === 'participation'): false} />} label="Залучалися до участі у діях воєнізованих чи збройних формувань" />
-                            <FormControlLabel value="maintenance" control={<Radio checked = {true ? (state === 'maintenance'): false} />} label="Незаконно утримувалися, у тому числі в полоні" />
-                            <FormControlLabel value="psychological" control={<Radio checked = {true ? (state === 'psychological'): false} />} label="Зазнали психологічного насильства" />
+                            <FormControlLabel value="wound" control={<Radio checked={true ? (state === 'wound') : false} />} label="Отримали поранення, контузію, каліцтво" />
+                            <FormControlLabel value="violence" control={<Radio checked={true ? (state === 'violence') : false} />} label="Зазнали фізичного, сексуального насильства" />
+                            <FormControlLabel value="stolen" control={<Radio checked={true ? (state === 'stolen') : false} />} label="Були викрадені або незаконно вивезені за межі України" />
+                            <FormControlLabel value="participation" control={<Radio checked={true ? (state === 'participation') : false} />} label="Залучалися до участі у діях воєнізованих чи збройних формувань" />
+                            <FormControlLabel value="maintenance" control={<Radio checked={true ? (state === 'maintenance') : false} />} label="Незаконно утримувалися, у тому числі в полоні" />
+                            <FormControlLabel value="psychological" control={<Radio checked={true ? (state === 'psychological') : false} />} label="Зазнали психологічного насильства" />
                           </RadioGroup>
                         </FormControl>
                         {isShown && state === 'psychological' ? (
-                        <FormGroup>
-                          <FormLabel sx={{ mt: 2 }}>Відмітьте наявніть наступних документів: </FormLabel>
-                          <FormControlLabel required control={<Checkbox checked={assesAct} onClick={handleClickAssesAct}/>} label="Акт оцінки потреб сім’ї " />
-                          <FormControlLabel required control={<Checkbox checked={conclusion} onClick={handleClickConclusion}/>} label="Висновок оцінки потреби сім’ї " />
-                        </FormGroup>
+                          <FormGroup>
+                            <FormLabel sx={{ mt: 2 }}>Відмітьте наявніть наступних документів: </FormLabel>
+                            <FormControlLabel required control={<Checkbox checked={assesAct} onClick={handleClickAssesAct} />} label="Акт оцінки потреб сім’ї " />
+                            <FormControlLabel required control={<Checkbox checked={conclusion} onClick={handleClickConclusion} />} label="Висновок оцінки потреби сім’ї " />
+                          </FormGroup>
                         ) : false}
                       </Grid>
 
@@ -552,7 +552,7 @@ export const Form = () => {
                         variant="contained"
                         onClick={handleNext}
                         disabled={
-                          !state || ((state === 'psychological' && (assesAct === false || conclusion === false))?(true) : false)
+                          !state || ((state === 'psychological' && (assesAct === false || conclusion === false)) ? (true) : false)
                         }
                         size="large"
                         sx={{ mt: 2, pr: 4, pl: 4, borderRadius: 2 }}
@@ -643,34 +643,91 @@ export const Form = () => {
                       </Grid>
 
                       <Grid item xs={12} sm={6}>
-                        <Box >
-                          <LocalizationProvider dateAdapter={AdapterDayjs} >
+                        <FormControl fullWidth>
+                          <TextField
+                            type="date"
+                            // onFocus="(this.type='data')"
+                            label="Оберіть дату*"
+                            {...register("dateRecording")}
+                            placeholder=''
+                            InputLabelProps={{ shrink: true }}
+                            // defaultValue="2019-05-24"
+                            // inputProps={{ min: today.getMonth(), max: `month` }}
+                            value={formData.dateRecording}
+                            error={errors.dateRecording ? true : false}
+                            helperText={errors.dateRecording?.message}
+                            name="dateRecording"
+                            onChange={handleChange}
+                          />
+                          </FormControl>
+                          {/* <LocalizationProvider dateAdapter={AdapterDayjs} >
                             <DemoItem >
                               <MobileDatePicker
+
                                 label="Оберіть дату *"
+                                controle={register}
                                 name="dateRecording"
                                 id="dateRecording"
-                              // {...register("dateRecording")}
-                              //value={formData.dateRecording}
-                              // onChange={handleChange}
+
+                                views={['day', 'month', 'year']}
+                                // {...register("dateRecording")}
+                                value={formData.dateRecording}
+                                onChange={handleChange}
+                                onError={errors.dateRecording ? true : false}
+                                slotProps={{
+                                  textField: {
+                                    helperText: errors.dateRecording?.message,
+                                  },
+                                }}
+                                renderInput={(params) => <TextField {...params} />}
 
 
-                              // onError={(newError) => setError(newError)}
-                              // error={errors.dateRecording ? true : false}
-                              // helperText={ errors.dateRecording?.message }  
-                              // slotProps={{
-                              //   textField: {
-                              //     helperText: errors.dateRecording?.message,
-                              //   },
-                              // }}
+
+
+                              {...register("dateRecording")}
+                              value={formData.dateRecording}
+                              onChange={handleChange}
+
+
+                              onError={(newError) => setError(newError)}
+                              error={errors.dateRecording ? true : false}
+                              helperText={ errors.dateRecording?.message }  
+                              slotProps={{
+                                textField: {
+                                  helperText: errors.dateRecording?.message,
+                                },
+                              }}
                               />
-                            </DemoItem>
-                          </LocalizationProvider>
+                              <Controller
+                                control={register}
+                                name="dateRecording"
+                                rules={{
+                                  required: true,
+                                }}
+                                render={({ field: { ref, onBlur, name, ...field }, fieldState }) => (
+                                  <MobileDatePicker
+                                    {...field}
+                                    inputRef={ref}
+                                    label="Date"
+                                    renderInput={(inputProps) => (
+                                      <TextField
+                                        {...inputProps}
+                                        onBlur={onBlur}
+                                        name={name}
+                                        error={!!fieldState.error}
+                                        helperText={fieldState.error?.message}
+                                      />
+                                    )}
+                                  />
+                                )}
+                              />
 
-                        </Box>
-                        <FormGroup sx = {{mt:1}}>
-                          <FormControlLabel required control={<Checkbox checked={personData} onClick={handleClickPersonData}/>} label="Даю згоду на обробку персональних даних " />
-                      </FormGroup>
+                            </DemoItem>
+                          </LocalizationProvider> */}
+
+                        <FormGroup sx={{ mt: 1 }}>
+                          <FormControlLabel required control={<Checkbox checked={personData} onClick={handleClickPersonData} />} label="Даю згоду на обробку персональних даних " />
+                        </FormGroup>
                       </Grid>
 
                       <Grid item xs={12} sm={6}>
@@ -705,7 +762,7 @@ export const Form = () => {
                     <div>
                       <Button
                         onClick={handleSubmit}
-                        disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.fatherly || !formData.name || !formData.ipn || !formData.community || !formData.region || !formData.recordingTime || personData === false || !state || ((state === 'psychological' && (assesAct === false || conclusion === false))?(true) : false)}
+                        disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.fatherly || !formData.name || !formData.ipn || !formData.community || !formData.region || !formData.recordingTime || personData === false || !state || ((state === 'psychological' && (assesAct === false || conclusion === false)) ? (true) : false)}
                         type="submit"
                         size="large"
                         variant="contained"
