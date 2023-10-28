@@ -90,12 +90,21 @@ const initialFormData = Object.freeze({
 });
 
 let regions = [];
+let communities = [];
 
 // axios.get(`${baseURL}/regions`)
 // .then(
 //   regions = respons.data)
 
 //   console.log(regions)
+axios.get(`${baseURL}/regions`)
+  .then((response) => {
+    regions = response.data
+  })
+axios.get(`${baseURL}/communities`)
+  .then((response) => {
+    communities = response.data
+  })
 
 export const Form = () => {
 
@@ -228,10 +237,11 @@ export const Form = () => {
     setPersonData(!personData);
   }
 
-
-
-
-
+  const filteredCommunities = () => {
+    return communities.filter(item => {
+      return item.region_id == formData.region
+    })
+  }
 
   return (
     <Theme>
@@ -588,23 +598,14 @@ export const Form = () => {
                             input={<OutlinedInput label="Оберіть район *" />}
                             error={errors.region ? true : false}
                           >
-                            {/* {names_districs.map((names_districs) => (
+                            {regions.map((item) => (
                               <MenuItem
-                                key={names_districs}
-                                value={names_districs}
+                                key={item.id}
+                                value={item.id}
                               >
-                                {names_districs}
+                                {item.title}
                               </MenuItem>
-                            ))} */}
-
-                            {/* {reg.map((r) => (
-                              <MenuItem
-                                key={r.id}
-                                value={r.title}
-                              >
-                                {r.title}
-                              </MenuItem>
-                            ))} */}
+                            ))}
                           </Select>
                           <FormHelperText sx={{ color: "#bf3333" }}>
                             {errors.region?.message}
@@ -626,12 +627,12 @@ export const Form = () => {
                             input={<OutlinedInput label="Оберіть громаду *" />}
                             error={errors.community ? true : false}
                           >
-                            {name_community.map((name_community) => (
+                            {filteredCommunities().map((item) => (
                               <MenuItem
-                                key={name_community}
-                                value={name_community}
+                                key={item.id}
+                                value={item.id}
                               >
-                                {name_community}
+                                {item.title}
                               </MenuItem>
                             ))}
                           </Select>
@@ -658,6 +659,7 @@ export const Form = () => {
                             helperText={errors.dateRecording?.message}
                             name="dateRecording"
                             onChange={handleChange}
+                            fullWidth
                           />
                           </FormControl>
                           {/* <LocalizationProvider dateAdapter={AdapterDayjs} >
