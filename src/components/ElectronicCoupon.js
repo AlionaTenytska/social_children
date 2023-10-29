@@ -69,6 +69,8 @@ export const ElectronicCoupon = () => {
     setFormData({ ...formData, hasChanged: true, [name]: value });
   };
 
+  
+
   return (
     <Theme>
       <Box>
@@ -111,7 +113,7 @@ export const ElectronicCoupon = () => {
             </Button></a>       
           </Grid>
 
-          <Grid
+          {/* <Grid
             container
             justifyContent="center"
             alignItems="center"
@@ -126,10 +128,10 @@ export const ElectronicCoupon = () => {
             </Button>
 
             
-          </Grid>
+          </Grid> */}
         </Container>
 
-        <Container maxWidth="sm" ref={ref} sx={{ mb: 4, mt: 4, display: isActive ? '' : 'none' }}>
+        {/* <Container maxWidth="sm" ref={ref} sx={{ mb: 4, mt: 4, display: isActive ? '' : 'none' }}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={8}>
               <TextField
@@ -159,7 +161,7 @@ export const ElectronicCoupon = () => {
               </Button>
             </Grid>
           </Grid>
-        </Container>
+        </Container> */}
       </Box>
     </Theme>
   );

@@ -1,35 +1,29 @@
 import * as React from 'react';
 import axios from "axios";
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
-import { DemoItem } from '@mui/x-date-pickers/internals/demo';
-import { Button, CssBaseline, TextField, Box, Typography, Container, Select, InputLabel, MenuItem, OutlinedInput, FormControl, Grid, FormHelperText, Stepper, Step, StepLabel, StepContent, Paper, RadioGroup, FormControlLabel, FormLabel, Radio, Checkbox, FormGroup } from '@mui/material';
+import { Button, CssBaseline, TextField, Box, Typography, Container, Select, InputLabel, MenuItem, OutlinedInput, FormControl, Grid, FormHelperText, Stepper, Step, StepLabel, StepContent, Paper, RadioGroup, FormControlLabel, FormLabel, Radio, Checkbox, FormGroup, ButtonGroup, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { Header } from './Header'
 import { Theme } from './Theme'
-import { Controller } from "react-hook-form";
+
+
 
 const baseURL = 'http://127.0.0.1:8000/api'
 
-const names_districs = [
-  'Сумський район',
-  'Конотопський район',
-  'Шосткинський район',
-  'Охтирський район',
-  'Роменський район',
-];
 
-const name_community = [
-  'Test name1',
-  'Test name 2',
-  'Test name 3',
-  'Test name 4',
-  'Test name 5',
-]
+const dates = [
+  '03.10.2023',
+  '05.10.2023',
+  '10.10.2023',
+  '12.10.2023',
+  '17.10.2023',
+  '19.10.2023',
+  '24.10.2023',
+  '26.10.2023',
+  '31.10.2023',
+];
 
 const times = [
   '8:15',
@@ -85,26 +79,22 @@ const initialFormData = Object.freeze({
   ipn: '',
   region: '',
   community: '',
-  dateRecording: null,
+  dateRecording: '',
   recordingTime: ''
 });
 
 let regions = [];
 let communities = [];
 
-// axios.get(`${baseURL}/regions`)
-// .then(
-//   regions = respons.data)
 
-//   console.log(regions)
-axios.get(`${baseURL}/regions`)
-  .then((response) => {
-    regions = response.data
-  })
-axios.get(`${baseURL}/communities`)
-  .then((response) => {
-    communities = response.data
-  })
+// axios.get(`${baseURL}/regions`)
+//   .then((response) => {
+//     regions = response.data
+//   })
+// axios.get(`${baseURL}/communities`)
+//   .then((response) => {
+//     communities = response.data
+//   })
 
 export const Form = () => {
 
@@ -153,9 +143,6 @@ export const Form = () => {
     resolver: yupResolver(validationSchema),
   });
 
-
-  const [value, setValue] = React.useState([]); // Для дати, поки не видаляю
-
   const handleChange = ({ target: { name, value } }) => {
     setFormData({ ...formData, hasChanged: true, [name]: value });
   };
@@ -182,25 +169,6 @@ export const Form = () => {
 
   const [reg, setReg] = React.useState([]);
 
-  // React.useEffect(() => {
-
-  // }, []);
-
-
-
-  // React.useEffect(() => {
-  //   const fetchData = async () => {
-  //     const result = await axios(`${baseURL}/regions`);
-  //     setReg(result.data);
-  //   };
-  //   fetchData();
-  // }, []);
-
-  console.log(reg);
-
-  // reg.map((r)=>(
-  //   console.log(r.title)
-  // ));
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -242,6 +210,28 @@ export const Form = () => {
       return item.region_id == formData.region
     })
   }
+
+  let date = new Date();
+
+  //   const minDate = () => {
+  //     const today = new Date().toISOString();
+  //     return today;
+  // };
+
+  // var firstDay = new Date(date.getFullYear(), date.getMonth(), 2).toISOString().split('T')[0];
+  // var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 1).toISOString().split('T')[0];
+
+  const [chosenDate, setChosenDate] = React.useState('');
+
+  const changeDate = (event, newAlignment) => {
+    setChosenDate(newAlignment);
+  };
+
+  const [chosenTime, setChosenTime] = React.useState('');
+  const changeTime = (event, newAlignment) => {
+    setChosenTime(newAlignment);
+  };
+
 
   return (
     <Theme>
@@ -317,7 +307,6 @@ export const Form = () => {
                           name="surname"
                           autoComplete="surname"
                           onChange={handleChange}
-                          // autoFocus
                           value={formData.surname}
                           error={errors.surname ? true : false}
                           helperText={errors.surname?.message}
@@ -378,7 +367,7 @@ export const Form = () => {
                         variant="contained"
                         onClick={handleNext}
                         size="large"
-                        // disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.fatherly || !formData.name}
+                        disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.fatherly || !formData.name}
                         sx={{ mt: 2, pr: 4, pl: 4, borderRadius: 2 }}
                       >
                         Далі
@@ -570,7 +559,6 @@ export const Form = () => {
                         Далі
                       </Button>
                       <Button
-                        // disabled={index === 0}
                         onClick={handleBack}
                         size="large"
                         sx={{ mt: 2, pr: 4, pl: 4, borderRadius: 2 }}
@@ -598,14 +586,14 @@ export const Form = () => {
                             input={<OutlinedInput label="Оберіть район *" />}
                             error={errors.region ? true : false}
                           >
-                            {regions.map((item) => (
+                            {/* {regions.map((item) => (
                               <MenuItem
                                 key={item.id}
                                 value={item.id}
                               >
                                 {item.title}
                               </MenuItem>
-                            ))}
+                            ))} */}
                           </Select>
                           <FormHelperText sx={{ color: "#bf3333" }}>
                             {errors.region?.message}
@@ -627,14 +615,14 @@ export const Form = () => {
                             input={<OutlinedInput label="Оберіть громаду *" />}
                             error={errors.community ? true : false}
                           >
-                            {filteredCommunities().map((item) => (
+                            {/* {filteredCommunities().map((item) => (
                               <MenuItem
                                 key={item.id}
                                 value={item.id}
                               >
                                 {item.title}
                               </MenuItem>
-                            ))}
+                            ))} */}
                           </Select>
                           <FormHelperText sx={{ color: "#bf3333" }}>
                             {errors.community?.message}
@@ -643,98 +631,54 @@ export const Form = () => {
                         </FormControl>
                       </Grid>
 
-                      <Grid item xs={12} sm={6}>
+                      <Grid item xs={12} sm={12}>
                         <FormControl fullWidth>
-                          <TextField
+                          {/* <TextField
                             type="date"
+                            id='date'
                             // onFocus="(this.type='data')"
                             label="Оберіть дату*"
                             {...register("dateRecording")}
                             placeholder=''
                             InputLabelProps={{ shrink: true }}
                             // defaultValue="2019-05-24"
-                            // inputProps={{ min: today.getMonth(), max: `month` }}
+                            inputProps={{ min: firstDay, max: lastDay, excludeDates: '2023-10-13'}}
                             value={formData.dateRecording}
                             error={errors.dateRecording ? true : false}
                             helperText={errors.dateRecording?.message}
                             name="dateRecording"
                             onChange={handleChange}
                             fullWidth
-                          />
-                          </FormControl>
-                          {/* <LocalizationProvider dateAdapter={AdapterDayjs} >
-                            <DemoItem >
-                              <MobileDatePicker
+                          /> */}
+                          <Typography align='left' color="inherit" sx={{ mb: 1 }}>
+                            Оберіть дату:*
+                          </Typography>
 
-                                label="Оберіть дату *"
-                                controle={register}
-                                name="dateRecording"
-                                id="dateRecording"
-
-                                views={['day', 'month', 'year']}
-                                // {...register("dateRecording")}
-                                value={formData.dateRecording}
-                                onChange={handleChange}
-                                onError={errors.dateRecording ? true : false}
-                                slotProps={{
-                                  textField: {
-                                    helperText: errors.dateRecording?.message,
-                                  },
-                                }}
-                                renderInput={(params) => <TextField {...params} />}
-
-
-
-
-                              {...register("dateRecording")}
-                              value={formData.dateRecording}
-                              onChange={handleChange}
-
-
-                              onError={(newError) => setError(newError)}
-                              error={errors.dateRecording ? true : false}
-                              helperText={ errors.dateRecording?.message }  
-                              slotProps={{
-                                textField: {
-                                  helperText: errors.dateRecording?.message,
-                                },
-                              }}
-                              />
-                              <Controller
-                                control={register}
-                                name="dateRecording"
-                                rules={{
-                                  required: true,
-                                }}
-                                render={({ field: { ref, onBlur, name, ...field }, fieldState }) => (
-                                  <MobileDatePicker
-                                    {...field}
-                                    inputRef={ref}
-                                    label="Date"
-                                    renderInput={(inputProps) => (
-                                      <TextField
-                                        {...inputProps}
-                                        onBlur={onBlur}
-                                        name={name}
-                                        error={!!fieldState.error}
-                                        helperText={fieldState.error?.message}
-                                      />
-                                    )}
-                                  />
-                                )}
-                              />
-
-                            </DemoItem>
-                          </LocalizationProvider> */}
-
-                        <FormGroup sx={{ mt: 1 }}>
-                          <FormControlLabel required control={<Checkbox checked={personData} onClick={handleClickPersonData} />} label="Даю згоду на обробку персональних даних " />
-                        </FormGroup>
+                          <ToggleButtonGroup
+                            color="primary"
+                            name='dateRecording'
+                            value={chosenDate}
+                            exclusive
+                            onChange={changeDate}
+                            sx={{
+                              display: "flex",
+                              flexWrap: 'wrap',
+                              justifyContent:"center", 
+                              alignItems:"center"
+                            }}
+                          >
+                            {dates.map((date) => (
+                              <ToggleButton value={date}>
+                                {date}
+                              </ToggleButton>
+                            ))}
+                          </ToggleButtonGroup>
+                        </FormControl>
                       </Grid>
 
-                      <Grid item xs={12} sm={6}>
+                      <Grid item xs={12} sm={12}>
                         <FormControl fullWidth error={errors.recordingTime ? true : false}>
-                          <InputLabel id="recordingTime">Оберіть час *</InputLabel>
+                          {/* <InputLabel id="recordingTime">Оберіть час *</InputLabel>
                           <Select
                             {...register("recordingTime")}
                             labelId="recordingTime"
@@ -757,8 +701,34 @@ export const Form = () => {
                           </Select>
                           <FormHelperText sx={{ color: "#bf3333" }}>
                             {errors.recordingTime?.message}
-                          </FormHelperText>
+                          </FormHelperText> */}
+                          <Typography align='left' color="inherit" sx={{ mb: 1 }}>
+                            Оберіть час:*
+                          </Typography>
+
+                          <ToggleButtonGroup
+                            color="primary"
+                            name='dateRecording'
+                            value={chosenTime}
+                            exclusive
+                            onChange={changeTime}
+                            sx={{
+                              display: "flex",
+                              flexWrap: 'wrap',
+                              justifyContent:"center", 
+                              alignItems:"center"
+                            }}
+                          >
+                            {times.map((time) => (
+                              <ToggleButton value={time} sx={{pr:4, pl:4 }}>
+                                {time}
+                              </ToggleButton>
+                            ))}
+                          </ToggleButtonGroup>
                         </FormControl>
+                        <FormGroup sx={{ mt: 1 }}>
+                          <FormControlLabel required control={<Checkbox checked={personData} onClick={handleClickPersonData} />} label="Даю згоду на обробку персональних даних " />
+                        </FormGroup>
                       </Grid>
                     </Grid>
                     <div>
