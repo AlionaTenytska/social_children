@@ -9,20 +9,14 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Header } from './Header'
 import { Theme } from './Theme'
 
-const baseURL = 'http://127.0.0.1:8000/api'
+const baseURL = 'https://app.children.sumy.ua/api'
 
 function createData(name, data) {
   return { name, data };
 }
-
-const id = 2;
-
-
 export const ElectronicCoupon = () => {
-
   let params = useParams();
   const [userData, setUserData] = React.useState([]);
-
   React.useEffect(() => {
     const expensesListResp = async () => {
       await axios.get(`${baseURL}/applications/${params.id}`)
@@ -101,14 +95,14 @@ export const ElectronicCoupon = () => {
             justifyContent="center"
             alignItems="center"
           >
-            <a href={`${baseURL}/applications/${id}/pdf`}><Button
+            <a href={`${baseURL}/applications/${userData.id}/pdf`}><Button
               type="submit"
               size="large"
               variant="contained"
               sx={{ mt: 1, mb: 1, pr: 9, pl: 9, borderRadius: 2 }}
             >
               Зберегти
-            </Button></a>       
+            </Button></a>
           </Grid>
 
           <Grid
@@ -124,8 +118,6 @@ export const ElectronicCoupon = () => {
             >
               Надіслати на пошту
             </Button>
-
-            
           </Grid>
         </Container>
 

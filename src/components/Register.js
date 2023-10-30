@@ -4,7 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { DemoItem } from '@mui/x-date-pickers/internals/demo';
-import { Button, CssBaseline, TextField, Box, Typography, Container, Select, InputLabel, MenuItem, OutlinedInput, FormControl, Grid, FormHelperText, Stepper, Step, StepLabel, StepContent, Paper, RadioGroup, FormControlLabel, FormLabel, Radio, Checkbox, FormGroup } from '@mui/material';
+import { Button, CssBaseline, TextField, Box, Typography, Container, Select, InputLabel, MenuItem, OutlinedInput, FormControl, Grid, FormHelperText, Stepper, Step, StepLabel, StepContent, Paper, RadioGroup, FormControlLabel, FormLabel, Radio, Checkbox, FormGroup, } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -12,7 +12,7 @@ import * as Yup from 'yup';
 import { Header } from './Header'
 import { Theme } from './Theme'
 
-const baseURL = 'http://127.0.0.1:8000/api'
+const baseURL = 'https://app.children.sumy.ua/api'
 
 const times = [
   '8:15',
@@ -33,7 +33,6 @@ const steps = [
     label: 'Місце, дата та час',
   },
 ];
-
 
 function isValidIPN(message) {
   return this.test("isValidIPN", message, function (value) {
@@ -85,7 +84,6 @@ axios.get(`${baseURL}/communities`)
   })
 
 export const Form = () => {
-
   const navigate = useNavigate();
   const [formData, setFormData] = React.useState(initialFormData);
   const [activeStep, setActiveStep] = React.useState(0);
@@ -131,7 +129,6 @@ export const Form = () => {
     resolver: yupResolver(validationSchema),
   });
 
-
   const [value, setValue] = React.useState([]); // Для дати, поки не видаляю
 
   const handleChange = ({ target: { name, value } }) => {
@@ -139,9 +136,7 @@ export const Form = () => {
   };
 
   const handleSubmit = (e) => {
-
     e.preventDefault()
-
     const userData = {
       name: formData.name,
       surname: formData.surname,
@@ -600,7 +595,7 @@ export const Form = () => {
 
                       <Grid item xs={12} sm={6}>
                         <Box >
-                          <LocalizationProvider dateAdapter={AdapterDayjs} >
+                        <LocalizationProvider dateAdapter={AdapterDayjs} >
                             <DemoItem >
                               <MobileDatePicker
                                 label="Оберіть дату *"
