@@ -7,7 +7,6 @@ import { Route, Routes } from "react-router-dom";
 function App() {
   return (
     <div>
-
       <Routes>
         <Route path="/" exact element={<Form />} />
         <Route path="/coupon/:id" element={<ElectronicCoupon />} />
