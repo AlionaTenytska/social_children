@@ -217,15 +217,16 @@ export const Form = () => {
 
   const [chosenDate, setChosenDate] = React.useState('');
 
-  const changeDate = (event, newAlignment) => {
+  const changeDate = (e, newAlignment) => {
     setChosenDate(newAlignment);
-  };
+    setFormData({ ...formData, dateRecording: newAlignment });
+  }
 
   const [chosenTime, setChosenTime] = React.useState('');
-  const changeTime = (event, newAlignment) => {
+  const changeTime = (e, newAlignment) => {
     setChosenTime(newAlignment);
+    setFormData({ ...formData, recordingTime: newAlignment });
   };
-
 
   return (
     <Theme>
@@ -635,7 +636,6 @@ export const Form = () => {
                           </Typography>
                           <ToggleButtonGroup
                             color="primary"
-                            name='dateRecording'
                             spacing={{ xs: 0, md: 2, lg: 3 }}
                             value={chosenDate}
                             exclusive
@@ -674,10 +674,9 @@ export const Form = () => {
                           <Typography align='left' color="inherit" sx={{ mb: 1 }}>
                             Оберіть час:*
                           </Typography>
-
+                          
                           <ToggleButtonGroup
                             color="primary"
-                            name='dateRecording'
                             value={chosenTime}
                             exclusive
                             onChange={changeTime}
