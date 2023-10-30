@@ -7,8 +7,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { Header } from './Header'
 import { Theme } from './Theme'
-import './Register.css';
-import { Repeat } from '@mui/icons-material';
 
 const baseURL = 'https://app.children.sumy.ua/api'
 
