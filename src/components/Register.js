@@ -232,8 +232,12 @@ export const Form = () => {
       <CssBaseline />
       <Header />
       <Container component="main" maxWidth="lg" sx={{ mb: 4, mt: 5 }}>
-        <Typography component="h1" variant="h5" align='center' color="inherit" sx={{ mt: 2, mb: 4, fontWeight: 500 }}>
+        <Typography component="h1" variant="h5" align='center' color="inherit" sx={{ mt: 2, fontWeight: 500 }}>
           ЗАПИС ДО ЕЛЕКТРОННОЇ ЧЕРГИ
+        </Typography>
+
+        <Typography  align='center' color="inherit" sx={{ mb: 4, fontSize:16 }}>
+              Робота з дитиною, яка постраждала в наслідок воєнних дій та збройних конфліктів
         </Typography>
 
         <Stepper activeStep={activeStep} orientation="vertical" sx={{
@@ -565,7 +569,7 @@ export const Form = () => {
                 {index === 2 ? (
                   <Box>
                     <Grid container spacing={4}>
-                      <Grid item xs={12} sm={6}>
+                      <Grid item xs={12} sm={6} sx={{ mt: 1 }}>
                         <FormControl fullWidth error={errors.region ? true : false}>
                           <InputLabel id="region">Оберіть район *</InputLabel>
                           <Select
@@ -594,7 +598,7 @@ export const Form = () => {
                         </FormControl>
                       </Grid>
 
-                      <Grid item xs={12} sm={6}>
+                      <Grid item xs={12} sm={6} sx={{ mt: 1 }}>
                         <FormControl fullWidth error={errors.community ? true : false}>
                           <InputLabel id="community">Оберіть громаду *</InputLabel>
                           <Select
