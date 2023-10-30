@@ -7,6 +7,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { Header } from './Header'
 import { Theme } from './Theme'
+import './Register.css';
+import { Repeat } from '@mui/icons-material';
 
 const baseURL = 'https://app.children.sumy.ua/api'
 
@@ -84,14 +86,14 @@ let regions = [];
 let communities = [];
 
 
-// axios.get(`${baseURL}/regions`)
-//   .then((response) => {
-//     regions = response.data
-//   })
-// axios.get(`${baseURL}/communities`)
-//   .then((response) => {
-//     communities = response.data
-//   })
+axios.get(`${baseURL}/regions`)
+  .then((response) => {
+    regions = response.data
+  })
+axios.get(`${baseURL}/communities`)
+  .then((response) => {
+    communities = response.data
+  })
 
 export const Form = () => {
   const navigate = useNavigate();
@@ -361,7 +363,7 @@ export const Form = () => {
                         variant="contained"
                         onClick={handleNext}
                         size="large"
-                        disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.fatherly || !formData.name}
+                        disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.fatherly || !formData.name || !formData.ipn}
                         sx={{ mt: 2, pr: 4, pl: 4, borderRadius: 2 }}
                       >
                         Далі
@@ -374,8 +376,7 @@ export const Form = () => {
                     <Grid container spacing={4}>
 
                       <Grid item xs={12} sm={6} >
-                        <FormControl>
-                          {/* <FormLabel id="demo-radio-buttons-group-label">Оберіть підставу для отримання статусу дитини, яка постраждала внаслідок воєнних дій та збройних конфліктів: </FormLabel> */}
+                        <FormControl>                     
                           <RadioGroup
                             aria-labelledby="demo-radio-buttons-group-label"
                             name="radio-buttons-group"
@@ -580,14 +581,14 @@ export const Form = () => {
                             input={<OutlinedInput label="Оберіть район *" />}
                             error={errors.region ? true : false}
                           >
-                            {/* {regions.map((item) => (
+                            {regions.map((item) => (
                               <MenuItem
                                 key={item.id}
                                 value={item.id}
                               >
                                 {item.title}
                               </MenuItem>
-                            ))} */}
+                            ))}
                           </Select>
                           <FormHelperText sx={{ color: "#bf3333" }}>
                             {errors.region?.message}
@@ -609,14 +610,14 @@ export const Form = () => {
                             input={<OutlinedInput label="Оберіть громаду *" />}
                             error={errors.community ? true : false}
                           >
-                            {/* {filteredCommunities().map((item) => (
+                            {filteredCommunities().map((item) => (
                               <MenuItem
                                 key={item.id}
                                 value={item.id}
                               >
                                 {item.title}
                               </MenuItem>
-                            ))} */}
+                            ))}
                           </Select>
                           <FormHelperText sx={{ color: "#bf3333" }}>
                             {errors.community?.message}
@@ -627,75 +628,47 @@ export const Form = () => {
 
                       <Grid item xs={12} sm={12}>
                         <FormControl fullWidth>
-                          {/* <TextField
-                            type="date"
-                            id='date'
-                            // onFocus="(this.type='data')"
-                            label="Оберіть дату*"
-                            {...register("dateRecording")}
-                            placeholder=''
-                            InputLabelProps={{ shrink: true }}
-                            // defaultValue="2019-05-24"
-                            inputProps={{ min: firstDay, max: lastDay, excludeDates: '2023-10-13'}}
-                            value={formData.dateRecording}
-                            error={errors.dateRecording ? true : false}
-                            helperText={errors.dateRecording?.message}
-                            name="dateRecording"
-                            onChange={handleChange}
-                            fullWidth
-                          /> */}
-                          <Typography align='left' color="inherit" sx={{ mb: 1 }}>
+                          <Typography align='left' color="inherit" sx={{ mb: 2 }}>
                             Оберіть дату:*
                           </Typography>
-
                           <ToggleButtonGroup
                             color="primary"
                             name='dateRecording'
+                            spacing={{ xs: 0, md: 2, lg: 3 }}
                             value={chosenDate}
                             exclusive
                             onChange={changeDate}
                             sx={{
-                              display: "flex",
-                              flexWrap: 'wrap',
-                              justifyContent:"center", 
-                              alignItems:"center"
+                              display: 'grid',
+                              gridGap: 8,
+                              '@media (min-width: 320px)' : {gridTemplateColumns: 'repeat(2, auto)'},
+                              '@media (min-width: 400px)' : {gridTemplateColumns: 'repeat(3, auto)'},
+                              '@media (min-width: 600px)' : {gridTemplateColumns: 'repeat(5, auto)'},
+                              '@media (min-width: 700px)' : {gridTemplateColumns: 'repeat(6, auto)'},
+                              '@media (min-width: 900px)' : {gridTemplateColumns: 'repeat(8, auto)'},
+                              '@media (min-width: 1000px)' : {gridTemplateColumns: 'repeat(9, auto)'},
+
+                              ".MuiToggleButtonGroup-grouped:not(:first-of-type)":{
+                                borderRadius: '3px',
+                                borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
+                              },
+                              ".MuiToggleButtonGroup-grouped:not(:last-of-type)" :{
+                                borderRadius: '3px',
+                                borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
+                              }
                             }}
                           >
-                            {dates.map((date) => (
-                              <ToggleButton value={date}>
+                            {dates.map((date) => (  
+                              <ToggleButton key={date} value={date} >
                                 {date}
                               </ToggleButton>
                             ))}
-                          </ToggleButtonGroup>
+                          </ToggleButtonGroup>           
                         </FormControl>
                       </Grid>
 
                       <Grid item xs={12} sm={12}>
                         <FormControl fullWidth error={errors.recordingTime ? true : false}>
-                          {/* <InputLabel id="recordingTime">Оберіть час *</InputLabel>
-                          <Select
-                            {...register("recordingTime")}
-                            labelId="recordingTime"
-                            id="recordingTime"
-                            required
-                            value={formData.recordingTime}
-                            name="recordingTime"
-                            onChange={handleChange}
-                            input={<OutlinedInput label="Оберіть час *" />}
-                            error={errors.recordingTime ? true : false}
-                          >
-                            {times.map((time) => (
-                              <MenuItem
-                                key={time}
-                                value={time}
-                              >
-                                {time}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                          <FormHelperText sx={{ color: "#bf3333" }}>
-                            {errors.recordingTime?.message}
-                          </FormHelperText> */}
                           <Typography align='left' color="inherit" sx={{ mb: 1 }}>
                             Оберіть час:*
                           </Typography>
@@ -707,21 +680,34 @@ export const Form = () => {
                             exclusive
                             onChange={changeTime}
                             sx={{
-                              display: "flex",
-                              flexWrap: 'wrap',
-                              justifyContent:"center", 
-                              alignItems:"center"
+                              display: 'grid',
+                              gridGap: 8,
+                              '@media (min-width: 320px)' : {gridTemplateColumns: 'repeat(2, auto)'},
+                              '@media (min-width: 400px)' : {gridTemplateColumns: 'repeat(3, auto)'},
+                              '@media (min-width: 600px)' : {gridTemplateColumns: 'repeat(5, auto)'},
+                              '@media (min-width: 700px)' : {gridTemplateColumns: 'repeat(6, auto)'},
+                              '@media (min-width: 900px)' : {gridTemplateColumns: 'repeat(8, auto)'},
+                              '@media (min-width: 1000px)' : {gridTemplateColumns: 'repeat(9, auto)'},
+
+                              ".MuiToggleButtonGroup-grouped:not(:first-of-type)":{
+                                borderRadius: '3px',
+                                borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
+                              },
+                              ".MuiToggleButtonGroup-grouped:not(:last-of-type)" :{
+                                borderRadius: '3px',
+                                borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
+                              }
                             }}
                           >
                             {times.map((time) => (
-                              <ToggleButton value={time} sx={{pr:4, pl:4 }}>
+                              <ToggleButton key= {time} value={time} sx={{pr:4, pl:4 }}>
                                 {time}
                               </ToggleButton>
                             ))}
                           </ToggleButtonGroup>
                         </FormControl>
                         <FormGroup sx={{ mt: 1 }}>
-                          <FormControlLabel required control={<Checkbox checked={personData} onClick={handleClickPersonData} />} label="Даю згоду на обробку персональних даних " />
+                          <FormControlLabel control={<Checkbox checked={personData} onClick={handleClickPersonData} />} label="Даю згоду на обробку персональних даних* " />
                         </FormGroup>
                       </Grid>
                     </Grid>
@@ -739,7 +725,7 @@ export const Form = () => {
                       <Button
                         onClick={handleBack}
                         size="large"
-                        sx={{ mt: 2, pr: 4, pl: 4, borderRadius: 2 }}
+                        sx={{ mt: 2, mb: 2, pr: 3, pl: 3, borderRadius: 2 }}
                       >
                         Назад
                       </Button>
