@@ -152,7 +152,7 @@ export const Form = () => {
       number: formData.ipn,
       locality: formData.region,
       community_id: 1,
-      date: '19.10.2023',
+      date: formData.dateRecording,
       time: formData.recordingTime
     }
     axios.post(`${baseURL}/applications`, userData).then((response) => {
@@ -207,14 +207,6 @@ export const Form = () => {
 
   let date = new Date();
 
-  //   const minDate = () => {
-  //     const today = new Date().toISOString();
-  //     return today;
-  // };
-
-  // var firstDay = new Date(date.getFullYear(), date.getMonth(), 2).toISOString().split('T')[0];
-  // var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 1).toISOString().split('T')[0];
-
   const [chosenDate, setChosenDate] = React.useState('');
 
   const changeDate = (e, newAlignment) => {
@@ -227,6 +219,8 @@ export const Form = () => {
     setChosenTime(newAlignment);
     setFormData({ ...formData, recordingTime: newAlignment });
   };
+
+  console.log(formData.community)
 
   return (
     <Theme>
@@ -674,7 +668,7 @@ export const Form = () => {
                           <Typography align='left' color="inherit" sx={{ mb: 1 }}>
                             Оберіть час:*
                           </Typography>
-                          
+
                           <ToggleButtonGroup
                             color="primary"
                             value={chosenTime}
