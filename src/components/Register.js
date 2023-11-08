@@ -10,39 +10,6 @@ import { Theme } from './Theme'
 
 const baseURL = 'https://app.children.sumy.ua/api'
 
-
-const dates = [
-  '03.10.2023',
-  '05.10.2023',
-  '10.10.2023',
-  '12.10.2023',
-  '17.10.2023',
-  '19.10.2023',
-  '24.10.2023',
-  '26.10.2023',
-  '31.10.2023',
-];
-
-const times = [
-  '8:15',
-  '9:00',
-  '9:45',
-  '10:30',
-  '11:15'
-]
-
-const steps = [
-  {
-    label: 'Персональні дані',
-  },
-  {
-    label: 'Підстава для отримання статусу дитини, яка постраждала внаслідок воєнних дій та збройних конфліктів',
-  },
-  {
-    label: 'Місце, дата та час',
-  },
-];
-
 function isValidIPN(message) {
   return this.test("isValidIPN", message, function (value) {
     const { path, createError } = this;
@@ -72,31 +39,43 @@ function isValidIPN(message) {
 const initialFormData = Object.freeze({
   surname: '',
   name: '',
-  fatherly: '',
-  ipn: '',
+  patronymic: '',
+  number: '',
   region: '',
-  community: '',
-  dateRecording: '',
-  recordingTime: ''
+  community_id: '',
+  date: '',
+  time: ''
 });
-
-let regions = [];
-let communities = [];
-
-
-axios.get(`${baseURL}/regions`)
-  .then((response) => {
-    regions = response.data
-  })
-axios.get(`${baseURL}/communities`)
-  .then((response) => {
-    communities = response.data
-  })
 
 export const Form = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = React.useState(initialFormData);
   const [activeStep, setActiveStep] = React.useState(0);
+  const [dates, setDates] = React.useState([]);
+  const [communities, setCommunities] = React.useState([]);
+  const [regions, setRegions] = React.useState([]);
+  const [times] = React.useState([
+    '8:15',
+    '9:00',
+    '9:45',
+    '10:30',
+    '11:15'
+  ]);
+  const [steps] = React.useState([
+    {
+      label: 'Персональні дані',
+    },
+    {
+      label: 'Підстава для отримання статусу дитини, яка постраждала внаслідок воєнних дій та збройних конфліктів',
+    },
+    {
+      label: 'Місце, дата та час',
+    },
+  ]);
+  const [reservedDates, setReservedDates] = React.useState({
+    date: [],
+    time: []
+  });
 
   Yup.addMethod(Yup.string, "isValidIPN", isValidIPN);
 
@@ -109,11 +88,11 @@ export const Form = () => {
       .required("Це обов'язкове поле")
       .matches(/^([^0-9]*)$/, "Не коректно введені дані")
       .min(2, "Не коректно введені дані"),
-    fatherly: Yup.string()
+    patronymic: Yup.string()
       .required("Це обов'язкове поле")
       .matches(/^([^0-9]*)$/, "Не коректно введені дані")
       .min(5, "Не коректно введені дані"),
-    ipn: Yup.string()
+    number: Yup.string()
       .matches(/^([^А-Я,а-я]*)$/, "Не коректно введені дані")
       .required("Це обов'язкове поле")
       .min(10, 'РНОКПП (ІПН) складається з десяти цифр')
@@ -122,12 +101,12 @@ export const Form = () => {
     region: Yup.string()
       .required("Це обов'язкове поле")
       .typeError("Це обов'язкове поле"),
-    community: Yup.string()
+    community_id: Yup.string()
       .required("Це обов'язкове поле")
       .typeError("Це обов'язкове поле"),
-    dateRecording: Yup.string()
+    date: Yup.string()
       .required("Це обов'язкове поле"),
-    recordingTime: Yup.string()
+    time: Yup.string()
       .required("Це обов'язкове поле")
   });
 
@@ -145,24 +124,10 @@ export const Form = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const userData = {
-      name: formData.name,
-      surname: formData.surname,
-      patronymic: formData.fatherly,
-      number: formData.ipn,
-      locality: formData.region,
-      community_id: 1,
-      date: formData.dateRecording,
-      time: formData.recordingTime
-    }
-    axios.post(`${baseURL}/applications`, userData).then((response) => {
+    axios.post(`${baseURL}/applications`, formData).then((response) => {
       navigate(`/coupon/${response.data.id}`);
     });
   };
-
-
-  const [reg, setReg] = React.useState([]);
-
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -171,7 +136,6 @@ export const Form = () => {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
-
 
   const [state, setState] = React.useState();
   function handleChangeRadio(event) {
@@ -205,22 +169,69 @@ export const Form = () => {
     })
   }
 
-  let date = new Date();
-
   const [chosenDate, setChosenDate] = React.useState('');
 
   const changeDate = (e, newAlignment) => {
     setChosenDate(newAlignment);
-    setFormData({ ...formData, dateRecording: newAlignment });
+    setFormData({ ...formData, date: newAlignment });
   }
 
   const [chosenTime, setChosenTime] = React.useState('');
   const changeTime = (e, newAlignment) => {
     setChosenTime(newAlignment);
-    setFormData({ ...formData, recordingTime: newAlignment });
+    setFormData({ ...formData, time: newAlignment });
   };
 
-  console.log(formData.community)
+  function selectCommunities(e) {
+    setFormData({ ...formData, hasChanged: true, [e.target.name]: e.target.value });
+    axios.get(`${baseURL}/applications/dates`, {
+      params: {
+        community_id: e.target.value
+      }
+    })
+      .then((response) => {
+        setReservedDates(response.data);
+      })
+  }
+
+  async function getTuesdaysAndThursdaysFormatted() {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const year = currentDate.getFullYear();
+    const result = [];
+    let date = new Date(year, currentMonth, 1);
+    while (date.getMonth() === currentMonth) {
+      if (date.getDay() === 2 || date.getDay() === 4) {
+        const formattedDate = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+        result.push(formattedDate);
+      }
+      date.setDate(date.getDate() + 1);
+    }
+    setDates(result);
+  }
+
+  async function getRegions() {
+    axios.get(`${baseURL}/regions`)
+      .then((response) => {
+        setRegions(response.data);
+      })
+  }
+
+  async function getCommunities() {
+    axios.get(`${baseURL}/communities`)
+      .then((response) => {
+        setCommunities(response.data);
+      })
+  }
+
+  React.useEffect(() => {
+    const expensesListResp = async () => {
+      await getRegions();
+      await getCommunities();
+      await getTuesdaysAndThursdaysFormatted();
+    }
+    expensesListResp();
+  }, []);
 
   return (
     <Theme>
@@ -231,8 +242,8 @@ export const Form = () => {
           ЗАПИС ДО ЕЛЕКТРОННОЇ ЧЕРГИ
         </Typography>
 
-        <Typography  align='center' color="inherit" sx={{ mb: 4, fontSize:16 }}>
-              Робота з дитиною, яка постраждала в наслідок воєнних дій та збройних конфліктів
+        <Typography align='center' color="inherit" sx={{ mb: 4, fontSize: 16 }}>
+          Робота з дитиною, яка постраждала в наслідок воєнних дій та збройних конфліктів
         </Typography>
 
         <Stepper activeStep={activeStep} orientation="vertical" sx={{
@@ -324,34 +335,34 @@ export const Form = () => {
 
                       <Grid item xs={12} sm={6}>
                         <TextField
-                          {...register("fatherly")}
+                          {...register("patronymic")}
                           required
                           fullWidth
-                          name="fatherly"
+                          name="patronymic"
                           label="По-батькові"
-                          id="fatherly"
-                          autoComplete="fatherly"
-                          value={formData.fatherly}
+                          id="patronymic"
+                          autoComplete="patronymic"
+                          value={formData.patronymic}
                           onChange={handleChange}
-                          error={errors.fatherly ? true : false}
-                          helperText={errors.fatherly?.message}
+                          error={errors.patronymic ? true : false}
+                          helperText={errors.patronymic?.message}
                         />
                       </Grid>
 
                       <Grid item xs={12} sm={6}>
                         <TextField
-                          {...register("ipn")}
+                          {...register("number")}
                           required
                           fullWidth
                           inputProps={{ maxLength: 10 }}
-                          name="ipn"
+                          name="number"
                           label="РНОКПП (ІПН)"
-                          id="ipn"
-                          autoComplete="ipn"
+                          id="number"
+                          autoComplete="number"
                           onChange={handleChange}
-                          value={formData.ipn}
-                          error={errors.ipn ? true : false}
-                          helperText={errors.ipn?.message}
+                          value={formData.number}
+                          error={errors.number ? true : false}
+                          helperText={errors.number?.message}
                         />
                       </Grid>
                     </Grid>
@@ -360,7 +371,7 @@ export const Form = () => {
                         variant="contained"
                         onClick={handleNext}
                         size="large"
-                        disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.fatherly || !formData.name || !formData.ipn}
+                        disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.patronymic || !formData.name || !formData.number}
                         sx={{ mt: 2, pr: 4, pl: 4, borderRadius: 2 }}
                       >
                         Далі
@@ -373,7 +384,7 @@ export const Form = () => {
                     <Grid container spacing={4}>
 
                       <Grid item xs={12} sm={6} >
-                        <FormControl>                     
+                        <FormControl>
                           <RadioGroup
                             aria-labelledby="demo-radio-buttons-group-label"
                             name="radio-buttons-group"
@@ -594,18 +605,18 @@ export const Form = () => {
                       </Grid>
 
                       <Grid item xs={12} sm={6} sx={{ mt: 1 }}>
-                        <FormControl fullWidth error={errors.community ? true : false}>
-                          <InputLabel id="community">Оберіть громаду *</InputLabel>
+                        <FormControl fullWidth error={errors.community_id ? true : false}>
+                          <InputLabel id="community_id">Оберіть громаду *</InputLabel>
                           <Select
-                            {...register("community")}
-                            labelId="community"
-                            id="community"
+                            {...register("community_id")}
+                            labelId="community_id"
+                            id="community_id"
                             required
-                            value={formData.community}
-                            name="community"
-                            onChange={handleChange}
+                            value={formData.community_id}
+                            name="community_id"
+                            onChange={(e) => { selectCommunities(e) }}
                             input={<OutlinedInput label="Оберіть громаду *" />}
-                            error={errors.community ? true : false}
+                            error={errors.community_id ? true : false}
                           >
                             {filteredCommunities().map((item) => (
                               <MenuItem
@@ -617,7 +628,7 @@ export const Form = () => {
                             ))}
                           </Select>
                           <FormHelperText sx={{ color: "#bf3333" }}>
-                            {errors.community?.message}
+                            {errors.community_id?.message}
                           </FormHelperText>
 
                         </FormControl>
@@ -637,34 +648,34 @@ export const Form = () => {
                             sx={{
                               display: 'grid',
                               gridGap: 8,
-                              '@media (min-width: 320px)' : {gridTemplateColumns: 'repeat(2, auto)'},
-                              '@media (min-width: 400px)' : {gridTemplateColumns: 'repeat(3, auto)'},
-                              '@media (min-width: 600px)' : {gridTemplateColumns: 'repeat(5, auto)'},
-                              '@media (min-width: 700px)' : {gridTemplateColumns: 'repeat(6, auto)'},
-                              '@media (min-width: 900px)' : {gridTemplateColumns: 'repeat(8, auto)'},
-                              '@media (min-width: 1000px)' : {gridTemplateColumns: 'repeat(9, auto)'},
+                              '@media (min-width: 320px)': { gridTemplateColumns: 'repeat(2, auto)' },
+                              '@media (min-width: 400px)': { gridTemplateColumns: 'repeat(3, auto)' },
+                              '@media (min-width: 600px)': { gridTemplateColumns: 'repeat(5, auto)' },
+                              '@media (min-width: 700px)': { gridTemplateColumns: 'repeat(6, auto)' },
+                              '@media (min-width: 900px)': { gridTemplateColumns: 'repeat(8, auto)' },
+                              '@media (min-width: 1000px)': { gridTemplateColumns: 'repeat(9, auto)' },
 
-                              ".MuiToggleButtonGroup-grouped:not(:first-of-type)":{
+                              ".MuiToggleButtonGroup-grouped:not(:first-of-type)": {
                                 borderRadius: '3px',
                                 borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
                               },
-                              ".MuiToggleButtonGroup-grouped:not(:last-of-type)" :{
+                              ".MuiToggleButtonGroup-grouped:not(:last-of-type)": {
                                 borderRadius: '3px',
                                 borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
                               }
                             }}
                           >
-                            {dates.map((date) => (  
-                              <ToggleButton key={date} value={date} >
+                            {dates.map((date) => (
+                              <ToggleButton key={date} value={date} disabled={!formData.community_id || !!reservedDates.date.find(item => item == date)}>
                                 {date}
                               </ToggleButton>
                             ))}
-                          </ToggleButtonGroup>           
+                          </ToggleButtonGroup>
                         </FormControl>
                       </Grid>
 
                       <Grid item xs={12} sm={12}>
-                        <FormControl fullWidth error={errors.recordingTime ? true : false}>
+                        <FormControl fullWidth error={errors.time ? true : false}>
                           <Typography align='left' color="inherit" sx={{ mb: 1 }}>
                             Оберіть час:*
                           </Typography>
@@ -677,25 +688,25 @@ export const Form = () => {
                             sx={{
                               display: 'grid',
                               gridGap: 8,
-                              '@media (min-width: 320px)' : {gridTemplateColumns: 'repeat(2, auto)'},
-                              '@media (min-width: 400px)' : {gridTemplateColumns: 'repeat(3, auto)'},
-                              '@media (min-width: 600px)' : {gridTemplateColumns: 'repeat(5, auto)'},
-                              '@media (min-width: 700px)' : {gridTemplateColumns: 'repeat(6, auto)'},
-                              '@media (min-width: 900px)' : {gridTemplateColumns: 'repeat(8, auto)'},
-                              '@media (min-width: 1000px)' : {gridTemplateColumns: 'repeat(9, auto)'},
+                              '@media (min-width: 320px)': { gridTemplateColumns: 'repeat(2, auto)' },
+                              '@media (min-width: 400px)': { gridTemplateColumns: 'repeat(3, auto)' },
+                              '@media (min-width: 600px)': { gridTemplateColumns: 'repeat(5, auto)' },
+                              '@media (min-width: 700px)': { gridTemplateColumns: 'repeat(6, auto)' },
+                              '@media (min-width: 900px)': { gridTemplateColumns: 'repeat(8, auto)' },
+                              '@media (min-width: 1000px)': { gridTemplateColumns: 'repeat(9, auto)' },
 
-                              ".MuiToggleButtonGroup-grouped:not(:first-of-type)":{
+                              ".MuiToggleButtonGroup-grouped:not(:first-of-type)": {
                                 borderRadius: '3px',
                                 borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
                               },
-                              ".MuiToggleButtonGroup-grouped:not(:last-of-type)" :{
+                              ".MuiToggleButtonGroup-grouped:not(:last-of-type)": {
                                 borderRadius: '3px',
                                 borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
                               }
                             }}
                           >
                             {times.map((time) => (
-                              <ToggleButton key= {time} value={time} sx={{pr:4, pl:4 }}>
+                              <ToggleButton key={time} value={time} sx={{ pr: 4, pl: 4 }} disabled={!formData.community_id || !!reservedDates.time.find(item => item == time)}>
                                 {time}
                               </ToggleButton>
                             ))}
@@ -709,7 +720,7 @@ export const Form = () => {
                     <div>
                       <Button
                         onClick={handleSubmit}
-                        disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.fatherly || !formData.name || !formData.ipn || !formData.community || !formData.region || !formData.recordingTime || personData === false || !state || ((state === 'psychological' && (assesAct === false || conclusion === false)) ? (true) : false)}
+                        disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.patronymic || !formData.name || !formData.number || !formData.community_id || !formData.region || !formData.time || personData === false || !state || ((state === 'psychological' && (assesAct === false || conclusion === false)) ? (true) : false)}
                         type="submit"
                         size="large"
                         variant="contained"
