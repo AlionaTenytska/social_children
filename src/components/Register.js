@@ -72,10 +72,7 @@ export const Form = () => {
       label: 'Місце, дата та час',
     },
   ]);
-  const [reservedDates, setReservedDates] = React.useState({
-    date: [],
-    time: []
-  });
+  const [reservedDates, setReservedDates] = React.useState([]);
 
   Yup.addMethod(Yup.string, "isValidIPN", isValidIPN);
 
@@ -251,6 +248,10 @@ export const Form = () => {
             width: 35,
             height: 35,
           },
+          ".css-1ii4bie .MuiStepLabel-iconContainer": {
+            width: 35,
+            height: 35,
+          },
           ".css-114vcqt-MuiStepLabel-label.Mui-active": {
             fontSize: 20,
           },
@@ -260,11 +261,11 @@ export const Form = () => {
           ".Mui-completed .css-114vcqt-MuiStepLabel-label": {
             fontSize: 16,
           },
-          ".css-14yr603-MuiStepContent-root": {
+          ".css-14yr603-MuiStepContent-root, .css-d0mviz": {
             borderLeft: '2px solid rgba(50,84,255,1)',
             marginLeft: '15px',
           },
-          ".css-8t49rw-MuiStepConnector-line": {
+          ".css-8t49rw-MuiStepConnector-line, .css-vgb7rt": {
             borderLeft: '2px solid rgba(50,84,255,1)',
             marginLeft: '3px',
           },
@@ -299,9 +300,9 @@ export const Form = () => {
               <StepContent>
                 {index === 0 ? (
                   <Box>
-                    <Grid container spacing={4}>
+                    <Grid container spacing={4} sx={{ pt: 2 }}>
 
-                      <Grid item xs={12} sm={6} sx={{ mt: 2 }}>
+                      <Grid item xs={12} sm={6}>
                         <TextField
                           {...register("surname")}
                           required
@@ -317,7 +318,7 @@ export const Form = () => {
                         />
                       </Grid>
 
-                      <Grid item xs={12} sm={6} sx={{ mt: 2 }}>
+                      <Grid item xs={12} sm={6}>
                         <TextField
                           {...register("name")}
                           required
@@ -666,7 +667,7 @@ export const Form = () => {
                             }}
                           >
                             {dates.map((date) => (
-                              <ToggleButton key={date} value={date} disabled={!formData.community_id || !!reservedDates.date.find(item => item == date)}>
+                              <ToggleButton key={date} value={date} disabled={ !formData.community_id || date.split('.', 1) < (new Date().getDate()) || reservedDates.some((element) => (element.date === date && element.selectTime.length === times.length))}>
                                 {date}
                               </ToggleButton>
                             ))}
@@ -706,7 +707,7 @@ export const Form = () => {
                             }}
                           >
                             {times.map((time) => (
-                              <ToggleButton key={time} value={time} sx={{ pr: 4, pl: 4 }} disabled={!formData.community_id || !!reservedDates.time.find(item => item == time)}>
+                              <ToggleButton key={time} value={time} sx={{ pr: 4, pl: 4 }} disabled = {!formData.community_id || !chosenDate || reservedDates.some((element) => (element.date === chosenDate && element.selectTime.find(timeEl =>  timeEl === time)))} >
                                 {time}
                               </ToggleButton>
                             ))}

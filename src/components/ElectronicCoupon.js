@@ -31,7 +31,7 @@ export const ElectronicCoupon = () => {
     createData("Ім'я:", userData.name),
     createData("По-батькові:", userData.patronymic),
     createData('РНОКПП (ІПН):', userData.number),
-    createData('Дата:', '19.10.2023'),
+    createData('Дата:', userData.date),
     createData('Час:', userData.time),
   ];
 
