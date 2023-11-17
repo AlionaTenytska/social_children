@@ -122,7 +122,11 @@ export const Form = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
     axios.post(`${baseURL}/applications`, formData).then((response) => {
-      navigate(`/coupon/${response.data.id}`);
+      if(response.data.status == 'number_is_exists') {
+        alert('number_is_exists');
+      } else {
+        navigate(`/coupon/${response.data.data.id}`);
+      }
     });
   };
 
