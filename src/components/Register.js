@@ -8,7 +8,8 @@ import * as Yup from 'yup';
 import { Header } from './Header'
 import { Theme } from './Theme'
 
-const baseURL = 'https://app.children.sumy.ua/api'
+//const baseURL = 'https://app.children.sumy.ua/api'
+const baseURL = 'http://127.0.0.1:8000/api'
 
 function isValidIPN(message) {
   return this.test("isValidIPN", message, function (value) {

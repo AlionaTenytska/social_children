@@ -9,7 +9,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Header } from './Header'
 import { Theme } from './Theme'
 
-const baseURL = 'https://app.children.sumy.ua/api'
+//const baseURL = 'https://app.children.sumy.ua/api'
+const baseURL = 'http://127.0.0.1:8000/api'
 
 function createData(name, data) {
   return { name, data };
