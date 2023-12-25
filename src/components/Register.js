@@ -1,12 +1,14 @@
 import * as React from 'react';
 import axios from "axios";
-import { Button, CssBaseline, TextField, Box, Typography, Container, Select, InputLabel, MenuItem, OutlinedInput, FormControl, Grid, FormHelperText, Stepper, Step, StepLabel, StepContent, Paper, RadioGroup, FormControlLabel, FormLabel, Radio, Checkbox, FormGroup, ButtonGroup, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { IconButton, Modal, Button, CssBaseline, TextField, Box, Typography, Container, Select, InputLabel, MenuItem, OutlinedInput, FormControl, Grid, FormHelperText, Stepper, Step, StepLabel, StepContent, Paper, RadioGroup, FormControlLabel, FormLabel, Radio, Checkbox, FormGroup, ButtonGroup, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { Header } from './Header'
 import { Theme } from './Theme'
+import CloseIcon from '@mui/icons-material/Close';
+
 
 //const baseURL = 'https://app.children.sumy.ua/api'
 const baseURL = 'http://127.0.0.1:8000/api'
@@ -119,12 +121,15 @@ export const Form = () => {
   const handleChange = ({ target: { name, value } }) => {
     setFormData({ ...formData, hasChanged: true, [name]: value });
   };
+  const [open, setOpen] = React.useState(false);
+  const handleClose = () => setOpen(false);
+
 
   const handleSubmit = (e) => {
     e.preventDefault()
     axios.post(`${baseURL}/applications`, formData).then((response) => {
-      if(response.data.status == 'number_is_exists') {
-        alert('number_is_exists');
+      if (response.data.status == 'number_is_exists') {
+        setOpen(true);
       } else {
         navigate(`/coupon/${response.data.data.id}`);
       }
@@ -672,7 +677,7 @@ export const Form = () => {
                             }}
                           >
                             {dates.map((date) => (
-                              <ToggleButton key={date} value={date} disabled={ !formData.community_id || date.split('.', 1) < (new Date().getDate()) || reservedDates.some((element) => (element.date === date && element.selectTime.length === times.length))}>
+                              <ToggleButton key={date} value={date} disabled={!formData.community_id || date.split('.', 1) < (new Date().getDate()) || reservedDates.some((element) => (element.date === date && element.selectTime.length === times.length))}>
                                 {date}
                               </ToggleButton>
                             ))}
@@ -712,7 +717,7 @@ export const Form = () => {
                             }}
                           >
                             {times.map((time) => (
-                              <ToggleButton key={time} value={time} sx={{ pr: 4, pl: 4 }} disabled = {!formData.community_id || !chosenDate || reservedDates.some((element) => (element.date === chosenDate && element.selectTime.find(timeEl =>  timeEl === time)))} >
+                              <ToggleButton key={time} value={time} sx={{ pr: 4, pl: 4 }} disabled={!formData.community_id || !chosenDate || reservedDates.some((element) => (element.date === chosenDate && element.selectTime.find(timeEl => timeEl === time)))} >
                                 {time}
                               </ToggleButton>
                             ))}
@@ -750,6 +755,50 @@ export const Form = () => {
             </Step>
           ))}
         </Stepper>
+        
+        <Modal
+          open={open}
+          onClose={handleClose}
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 1 }}
+        >
+         <Box sx={{
+             position: 'absolute',
+             top: '50%',
+             left: '50%',
+             transform: 'translate(-50%, -50%)',
+            '@media (min-width: 300px)': { width: 250 },
+            '@media (min-width: 400px)': { width: 300 },
+            '@media (min-width: 600px)': { width: 400 },
+            '@media (min-width: 700px)': { width: 450 },
+            '@media (min-width: 900px)': { width: 500 },
+            '@media (min-width: 1000px)': { width: 600 },
+             minWidth: 200,
+             bgcolor: 'background.paper',
+             borderRadius: 3,
+             boxShadow: 24,
+             p: 4,
+          }}>
+            <IconButton
+              aria-label="close"
+              onClick={handleClose}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500],
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography id="modal-modal-title" variant="h6" component="h2" sx={{textAlign:'center', color: 'red'}}>
+              Увага!
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 1 }}>
+              Користувач з таким РНОКПП (ІПН) вже записаний до електронної черги. 
+            </Typography>          
+          </Box>
+        </Modal>
+
       </Container>
     </Theme>
   );
