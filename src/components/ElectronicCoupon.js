@@ -9,8 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Header } from './Header'
 import { Theme } from './Theme'
 
-//const baseURL = 'https://app.children.sumy.ua/api'
-const baseURL = 'http://127.0.0.1:8000/api'
+const baseURL = process.env.REACT_APP_API_KEY;
 
 function createData(name, data) {
   return { name, data };
@@ -65,7 +64,6 @@ export const ElectronicCoupon = () => {
   };
 
   
-
   return (
     <Theme>
       <Box>

@@ -9,9 +9,7 @@ import { Header } from './Header'
 import { Theme } from './Theme'
 import CloseIcon from '@mui/icons-material/Close';
 
-
-//const baseURL = 'https://app.children.sumy.ua/api'
-const baseURL = 'http://127.0.0.1:8000/api'
+const baseURL = process.env.REACT_APP_API_KEY;
 
 function isValidIPN(message) {
   return this.test("isValidIPN", message, function (value) {
@@ -124,6 +122,9 @@ export const Form = () => {
   const [open, setOpen] = React.useState(false);
   const handleClose = () => setOpen(false);
 
+  const [open2, setOpen2] = React.useState(false);
+  const handleClose2 = () => setOpen2(false);
+
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -133,6 +134,8 @@ export const Form = () => {
       } else {
         navigate(`/coupon/${response.data.data.id}`);
       }
+    }).catch(function (error) {
+      setOpen2(true)
     });
   };
 
@@ -199,6 +202,9 @@ export const Form = () => {
       .then((response) => {
         setReservedDates(response.data);
       })
+      .catch(function (error) {
+        setOpen2(true)
+      })
   }
 
   async function getTuesdaysAndThursdaysFormatted() {
@@ -222,12 +228,18 @@ export const Form = () => {
       .then((response) => {
         setRegions(response.data);
       })
+      .catch(function (error) {
+        setOpen2(true)
+      })
   }
 
   async function getCommunities() {
     axios.get(`${baseURL}/communities`)
       .then((response) => {
         setCommunities(response.data);
+      })
+      .catch(function (error) {
+        setOpen2(true)
       })
   }
 
@@ -755,28 +767,28 @@ export const Form = () => {
             </Step>
           ))}
         </Stepper>
-        
+
         <Modal
           open={open}
           onClose={handleClose}
           sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 1 }}
         >
-         <Box sx={{
-             position: 'absolute',
-             top: '50%',
-             left: '50%',
-             transform: 'translate(-50%, -50%)',
+          <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
             '@media (min-width: 300px)': { width: 250 },
             '@media (min-width: 400px)': { width: 300 },
             '@media (min-width: 600px)': { width: 400 },
             '@media (min-width: 700px)': { width: 450 },
             '@media (min-width: 900px)': { width: 500 },
             '@media (min-width: 1000px)': { width: 600 },
-             minWidth: 200,
-             bgcolor: 'background.paper',
-             borderRadius: 3,
-             boxShadow: 24,
-             p: 4,
+            minWidth: 200,
+            bgcolor: 'background.paper',
+            borderRadius: 3,
+            boxShadow: 24,
+            p: 4,
           }}>
             <IconButton
               aria-label="close"
@@ -790,12 +802,52 @@ export const Form = () => {
             >
               <CloseIcon />
             </IconButton>
-            <Typography id="modal-modal-title" variant="h6" component="h2" sx={{textAlign:'center', color: 'red'}}>
+            <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ textAlign: 'center', color: 'red' }}>
               Увага!
             </Typography>
             <Typography id="modal-modal-description" sx={{ mt: 1 }}>
-              Користувач з таким РНОКПП (ІПН) вже записаний до електронної черги. 
-            </Typography>          
+              Користувач з таким РНОКПП (ІПН) вже записаний до електронної черги.
+            </Typography>
+          </Box>
+        </Modal>
+
+        <Modal
+          open={open2}
+          onClose={handleClose2}
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 1 }}
+        >
+          <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            '@media (min-width: 300px)': { width: 250 },
+            '@media (min-width: 400px)': { width: 300 },
+            '@media (min-width: 600px)': { width: 400 },
+            '@media (min-width: 700px)': { width: 450 },
+            '@media (min-width: 900px)': { width: 500 },
+            '@media (min-width: 1000px)': { width: 600 },
+            minWidth: 200,
+            bgcolor: 'background.paper',
+            borderRadius: 3,
+            boxShadow: 24,
+            p: 4,
+          }}>
+            <IconButton
+              aria-label="close"
+              onClick={handleClose2}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500],
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ textAlign: 'center', color: 'red' }}>
+              Сервер не відповідає! Будь ласка, повторіть запит пізніше.
+            </Typography>
           </Box>
         </Modal>
 
