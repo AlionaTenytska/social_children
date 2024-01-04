@@ -57,10 +57,15 @@ export const Form = () => {
   const [regions, setRegions] = React.useState([]);
   const [times] = React.useState([
     '8:15',
-    '9:00',
+    '8:45',
+    '9:15',
     '9:45',
-    '10:30',
-    '11:15'
+    '10:15',
+    '10:45',
+    '11:15',
+    '13:15',
+    '13:45',
+    '14:15',
   ]);
   const [steps] = React.useState([
     {
@@ -716,7 +721,7 @@ export const Form = () => {
                               '@media (min-width: 600px)': { gridTemplateColumns: 'repeat(5, auto)' },
                               '@media (min-width: 700px)': { gridTemplateColumns: 'repeat(6, auto)' },
                               '@media (min-width: 900px)': { gridTemplateColumns: 'repeat(8, auto)' },
-                              '@media (min-width: 1000px)': { gridTemplateColumns: 'repeat(9, auto)' },
+                              '@media (min-width: 1000px)': { gridTemplateColumns: 'repeat(10, auto)' },
 
                               ".MuiToggleButtonGroup-grouped:not(:first-of-type)": {
                                 borderRadius: '3px',
