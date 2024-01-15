@@ -130,13 +130,19 @@ export const Form = () => {
   const [open2, setOpen2] = React.useState(false);
   const handleClose2 = () => setOpen2(false);
 
+  const [open3, setOpen3] = React.useState(false);
+  const handleClose3 = () => setOpen3(false);
+
 
   const handleSubmit = (e) => {
     e.preventDefault()
     axios.post(`${baseURL}/applications`, formData).then((response) => {
       if (response.data.status == 'number_is_exists') {
         setOpen(true);
-      } else {
+      } else if(response.data.status == 'date_is_exists'){
+        setOpen3(true);
+      }
+      else {
         navigate(`/coupon/${response.data.data.id}`);
       }
     }).catch(function (error) {
@@ -812,6 +818,46 @@ export const Form = () => {
             </Typography>
             <Typography id="modal-modal-description" sx={{ mt: 1 }}>
               Користувач з таким РНОКПП (ІПН) вже записаний до електронної черги.
+            </Typography>
+          </Box>
+        </Modal>
+
+        <Modal
+          open={open3}
+          onClose={handleClose3}
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 1 }}
+        >
+          <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            '@media (min-width: 300px)': { width: 250 },
+            '@media (min-width: 400px)': { width: 300 },
+            '@media (min-width: 600px)': { width: 400 },
+            '@media (min-width: 700px)': { width: 450 },
+            '@media (min-width: 900px)': { width: 500 },
+            '@media (min-width: 1000px)': { width: 600 },
+            minWidth: 200,
+            bgcolor: 'background.paper',
+            borderRadius: 3,
+            boxShadow: 24,
+            p: 4,
+          }}>
+            <IconButton
+              aria-label="close"
+              onClick={handleClose3}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500],
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ textAlign: 'center', color: 'red' }}>
+              Вибачте, обрані дата та час вже зайняті. 
             </Typography>
           </Box>
         </Modal>
