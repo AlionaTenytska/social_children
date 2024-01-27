@@ -263,16 +263,16 @@ export const Form = () => {
             fontSize: 16,
           },
           ".css-14yr603-MuiStepContent-root, .css-d0mviz": {
-            borderLeft: '2px solid rgb(68, 202, 220)',
+            borderLeft: '2px solid rgb(255, 248, 28)',
             marginLeft: '17px',
           },
           ".css-8t49rw-MuiStepConnector-line, .css-vgb7rt": {
-            borderLeft: '2px solid rgb(68, 202, 220)',
+            borderLeft: '2px solid rgb(255, 248, 28)',
             marginLeft: '5px',
           },
           ".MuiStepLabel-iconContainer .MuiSvgIcon-root": {
             borderRadius: "50%",
-            border: "1px solid rgb(68, 202, 220)",
+            border: "1px solid rgb(255, 248, 28)",
             width: "1.5em",
             height: "1.5em"
           },
@@ -280,14 +280,14 @@ export const Form = () => {
             color: "white"
           },
           ".MuiStepLabel-iconContainer .MuiStepIcon-text": {
-            fill: "rgb(68, 202, 220)",
+            fill: "rgb(255, 248, 28)",
             fontWeight: 500
           },
           ".MuiStepLabel-iconContainer .MuiSvgIcon-root.Mui-active": {
-            color: "rgb(68, 202, 220)",
+            color: "rgb(255, 248, 28)",
             padding: "3px",
             borderRadius: "50%",
-            border: "1px solid rgb(68, 202, 220)",
+            border: "1px solid rgb(255, 248, 28)",
             marginY: "-3px",
             width: "1.5em",
             height: "1.5em"
