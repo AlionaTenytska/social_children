@@ -11,9 +11,9 @@ export const Header = () => {
             elevation={3}
             className='appBar'
       >
-        <img src="/images/sumy.png"  className='logo'/>
-        <Typography variant="h6" align='center' sx={{mb: 2}}>
-            УПРАВЛІННЯ "СЛУЖБА У СПРАВАХ ДІТЕЙ"
+        <img src="/images/Gerb_goroda_Sumy2.png"  className='logo'/>
+        <Typography variant="h6" align='center' sx={{mb: 2, сolor: "white"}}>
+            СУМСЬКИЙ МІСЬКИЙ ЦЕНТР СОЦІАЛЬНИХ СЛУЖБ
         </Typography>
       </AppBar>
     </Box>

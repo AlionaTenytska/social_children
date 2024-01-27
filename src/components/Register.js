@@ -42,40 +42,54 @@ const initialFormData = Object.freeze({
   name: '',
   patronymic: '',
   number: '',
-  region: '',
-  community_id: '',
+  month: '',
   date: '',
   time: ''
 });
+
+const monthNamesUkrainian = [
+  'Січень',
+  'Лютий',
+  'Березень',
+  'Квітень',
+  'Травень',
+  'Червень',
+  'Липень',
+  'Серпень',
+  'Вересень',
+  'Жовтень',
+  'Листопад',
+  'Грудень',
+];
 
 export const Form = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = React.useState(initialFormData);
   const [activeStep, setActiveStep] = React.useState(0);
   const [dates, setDates] = React.useState([]);
-  const [communities, setCommunities] = React.useState([]);
-  const [regions, setRegions] = React.useState([]);
+  const [month, setMonth] = React.useState([]);
+  // const [communities, setCommunities] = React.useState([]);
+  // const [regions, setRegions] = React.useState([]);
   const [times] = React.useState([
-    '8:15',
-    '8:45',
-    '9:15',
-    '9:45',
-    '10:15',
-    '10:45',
-    '11:15',
-    '13:15',
-    '13:45',
-    '14:15',
+    '9:00',
+    '9:20',
+    '9:40',
+    '10:00',
+    '10:20',
+    '10:40',
+    '11:00',
+    '11:20',
+    '11:40',
   ]);
   const [steps] = React.useState([
+    {
+      label: 'Інформаційна довідка',
+    },
     {
       label: 'Персональні дані',
     },
     {
-      label: 'Підстава для отримання статусу дитини, яка постраждала внаслідок воєнних дій та збройних конфліктів',
-    },
-    {
-      label: 'Місце, дата та час',
+      label: 'Дата та час',
     },
   ]);
   const [reservedDates, setReservedDates] = React.useState([]);
@@ -101,10 +115,7 @@ export const Form = () => {
       .min(10, 'РНОКПП (ІПН) складається з десяти цифр')
       .max(10, 'РНОКПП (ІПН) складається з десяти цифр')
       .isValidIPN('Не вірно вказаний РНОКПП (ІПН)'),
-    region: Yup.string()
-      .required("Це обов'язкове поле")
-      .typeError("Це обов'язкове поле"),
-    community_id: Yup.string()
+    month: Yup.string()
       .required("Це обов'язкове поле")
       .typeError("Це обов'язкове поле"),
     date: Yup.string()
@@ -139,7 +150,7 @@ export const Form = () => {
     axios.post(`${baseURL}/applications`, formData).then((response) => {
       if (response.data.status == 'number_is_exists') {
         setOpen(true);
-      } else if(response.data.status == 'date_is_exists'){
+      } else if (response.data.status == 'date_is_exists') {
         setOpen3(true);
       }
       else {
@@ -163,11 +174,7 @@ export const Form = () => {
     setState(event.target.value);
   }
 
-  const [isShown, setIsShown] = React.useState(false);
 
-  function handleClickRadio() {
-    setIsShown(true);
-  }
 
   const [assesAct, setAssesAct] = React.useState(false);
   function handleClickAssesAct() {
@@ -184,48 +191,27 @@ export const Form = () => {
     setPersonData(!personData);
   }
 
-  const filteredCommunities = () => {
-    return communities.filter(item => {
-      return item.region_id == formData.region
-    })
+  // const filteredCommunities = () => {
+  //   return communities.filter(item => {
+  //     return item.region_id == formData.region
+  //   })
+  // }
+  
+  const [isShown, setIsShown] = React.useState(false);
+
+  function handleClickMonth() {
+    setIsShown(true);
   }
 
-  const [chosenDate, setChosenDate] = React.useState('');
 
-  const changeDate = (e, newAlignment) => {
-    setChosenDate(newAlignment);
-    setFormData({ ...formData, date: newAlignment });
-  }
-
-  const [chosenTime, setChosenTime] = React.useState('');
-  const changeTime = (e, newAlignment) => {
-    setChosenTime(newAlignment);
-    setFormData({ ...formData, time: newAlignment });
-  };
-
-  function selectCommunities(e) {
-    setFormData({ ...formData, hasChanged: true, [e.target.name]: e.target.value });
-    axios.get(`${baseURL}/applications/dates`, {
-      params: {
-        community_id: e.target.value
-      }
-    })
-      .then((response) => {
-        setReservedDates(response.data);
-      })
-      .catch(function (error) {
-        setOpen2(true)
-      })
-  }
-
-  async function getTuesdaysAndThursdaysFormatted() {
+  function getMondayTuesdaysWednesdayFormatted(month) {
     const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
     const year = currentDate.getFullYear();
     const result = [];
-    let date = new Date(year, currentMonth, 1);
-    while (date.getMonth() === currentMonth) {
-      if (date.getDay() === 2 || date.getDay() === 4) {
+    const monthId = monthNamesUkrainian.indexOf(month);
+    let date = new Date(year, monthId, 1);
+    while (date.getMonth() === monthId) {
+      if (date.getDay() === 1 || date.getDay() === 2 || date.getDay() === 3) {
         const formattedDate = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
         result.push(formattedDate);
       }
@@ -234,31 +220,49 @@ export const Form = () => {
     setDates(result);
   }
 
-  async function getRegions() {
-    axios.get(`${baseURL}/regions`)
-      .then((response) => {
-        setRegions(response.data);
-      })
-      .catch(function (error) {
-        setOpen2(true)
-      })
+
+  const [chosenMonths, setChosenMonth] = React.useState('');
+  const [chosenDate, setChosenDate] = React.useState('');
+  const [chosenTime, setChosenTime] = React.useState('');
+
+  const changeMonth = (e, newAlignment) => {
+    setChosenMonth(newAlignment);
+    setFormData({ ...formData, month: newAlignment, date: '', time: '' });
+    getMondayTuesdaysWednesdayFormatted(newAlignment);
+    setChosenDate('');
+    setChosenTime('');
   }
 
-  async function getCommunities() {
-    axios.get(`${baseURL}/communities`)
-      .then((response) => {
-        setCommunities(response.data);
-      })
-      .catch(function (error) {
-        setOpen2(true)
-      })
+  const changeDate = (e, newAlignment) => {
+    setChosenDate(newAlignment);
+    setFormData({ ...formData, date: newAlignment, time: ''});
+    setChosenTime('');
+  }
+
+  const changeTime = (e, newAlignment) => {
+    setChosenTime(newAlignment);
+    setFormData({ ...formData, time: newAlignment });
+  };
+
+  console.log(chosenMonths);
+  console.log(chosenDate);
+  console.log(chosenTime);
+  console.log("Form date:");
+  console.log(formData.month);
+  console.log(formData.date);
+  console.log(formData.time);
+
+  async function getMonthFormatted() {
+    const result = [];
+    for (let i = 6; i < monthNamesUkrainian.length; i++) {
+      result.push(monthNamesUkrainian[i]);
+    }
+    setMonth(result);
   }
 
   React.useEffect(() => {
     const expensesListResp = async () => {
-      await getRegions();
-      await getCommunities();
-      await getTuesdaysAndThursdaysFormatted();
+      await getMonthFormatted();
     }
     expensesListResp();
   }, []);
@@ -273,7 +277,7 @@ export const Form = () => {
         </Typography>
 
         <Typography align='center' color="inherit" sx={{ mb: 4, fontSize: 16 }}>
-          Робота з дитиною, яка постраждала в наслідок воєнних дій та збройних конфліктів
+          для складання акту оцінки потреб сім’ї/особи для надання статусу дитині, яка постраждала в наслідок воєнних дій та збройних конфліктів
         </Typography>
 
         <Stepper activeStep={activeStep} orientation="vertical" sx={{
@@ -295,29 +299,29 @@ export const Form = () => {
             fontSize: 16,
           },
           ".css-14yr603-MuiStepContent-root, .css-d0mviz": {
-            borderLeft: '2px solid rgba(50,84,255,1)',
+            borderLeft: '2px solid rgb(68, 202, 220)',
             marginLeft: '15px',
           },
           ".css-8t49rw-MuiStepConnector-line, .css-vgb7rt": {
-            borderLeft: '2px solid rgba(50,84,255,1)',
+            borderLeft: '2px solid rgb(68, 202, 220)',
             marginLeft: '3px',
           },
           ".MuiStepLabel-iconContainer .MuiSvgIcon-root": {
             borderRadius: "50%",
-            border: "1px solid rgba(50,84,255,1)"
+            border: "1px solid rgb(68, 202, 220)"
           },
           ".MuiStepLabel-iconContainer .MuiSvgIcon-root:not(.Mui-completed)": {
             color: "white"
           },
           ".MuiStepLabel-iconContainer .MuiStepIcon-text": {
-            fill: "rgba(50,84,255,1)",
+            fill: "rgb(68, 202, 220)",
             fontWeight: 500
           },
           ".MuiStepLabel-iconContainer .MuiSvgIcon-root.Mui-active": {
-            color: "rgba(50,84,255,1)",
+            color: "rgb(68, 202, 220)",
             padding: "3px",
             borderRadius: "50%",
-            border: "1px solid rgba(50,84,255,1)",
+            border: "1px solid rgb(68, 202, 220)",
             marginY: "-3px"
           },
           ".MuiStepLabel-iconContainer .Mui-active .MuiStepIcon-text": {
@@ -332,6 +336,48 @@ export const Form = () => {
 
               <StepContent>
                 {index === 0 ? (
+                  <Box>
+                    <Grid container spacing={4}>
+
+                      <Grid item xs={12} sm={6} >
+                        <Typography align='left' color="inherit" sx={{ mb: 4, fontSize: 16 }}>
+                          Звертаємо вашу увагу, що звертатися можуть тільки мешканці Сумської міської територіальної громади.
+                        </Typography>
+                        <Typography align='left' color="inherit" sx={{ mb: 4, fontSize: 16 }}>
+                          <b>Адреса:</b> м. Суми, вул. Харківська 42
+                        </Typography>
+                      </Grid>
+
+                      <Grid item xs={12} sm={6}>
+
+                        <Typography align='left' color="inherit" sx={{ fontSize: 16, fontWeight: 700, mb: 1 }}>
+                          Для складання акту оцінки потреб сім’ї/особи при собі необхідно мати оригінали документіви:
+                        </Typography>
+                        <Typography sx={{ fontSize: 16 }}>
+                          — свідоцтво про народження дитини або інший документ, що посвідчує особу дитини;
+                        </Typography>
+                        <Typography>
+                          — документ, що підтверджує повноваження законного представника дитини або родинні стосунки між дитиною та заявником;
+                        </Typography>
+                        <Typography>
+                          — довідка про взяття дитини на облік як внутрішньо переміщеної особи (у разі наявності).
+                        </Typography>
+                      </Grid>
+
+                    </Grid>
+                    <div>
+                      <Button
+                        variant="contained"
+                        onClick={handleNext}
+                        size="large"
+                        sx={{ mt: 2, pr: 4, pl: 4, borderRadius: 2 }}
+                      >
+                        Далі
+                      </Button>
+                    </div>
+                  </Box>
+                ) : null}
+                {index === 1 ? (
                   <Box>
                     <Grid container spacing={4} sx={{ pt: 2 }}>
 
@@ -410,191 +456,6 @@ export const Form = () => {
                       >
                         Далі
                       </Button>
-                    </div>
-                  </Box>
-                ) : null}
-                {index === 1 ? (
-                  <Box>
-                    <Grid container spacing={4}>
-
-                      <Grid item xs={12} sm={6} >
-                        <FormControl>
-                          <RadioGroup
-                            aria-labelledby="demo-radio-buttons-group-label"
-                            name="radio-buttons-group"
-                            onChange={handleChangeRadio}
-                            onClick={handleClickRadio}
-                          >
-                            <FormControlLabel value="wound" control={<Radio checked={true ? (state === 'wound') : false} />} label="Отримали поранення, контузію, каліцтво" />
-                            <FormControlLabel value="violence" control={<Radio checked={true ? (state === 'violence') : false} />} label="Зазнали фізичного, сексуального насильства" />
-                            <FormControlLabel value="stolen" control={<Radio checked={true ? (state === 'stolen') : false} />} label="Були викрадені або незаконно вивезені за межі України" />
-                            <FormControlLabel value="participation" control={<Radio checked={true ? (state === 'participation') : false} />} label="Залучалися до участі у діях воєнізованих чи збройних формувань" />
-                            <FormControlLabel value="maintenance" control={<Radio checked={true ? (state === 'maintenance') : false} />} label="Незаконно утримувалися, у тому числі в полоні" />
-                            <FormControlLabel value="psychological" control={<Radio checked={true ? (state === 'psychological') : false} />} label="Зазнали психологічного насильства" />
-                          </RadioGroup>
-                        </FormControl>
-                        {isShown && state === 'psychological' ? (
-                          <FormGroup>
-                            <FormLabel sx={{ mt: 2 }}>Відмітьте наявніть наступних документів: </FormLabel>
-                            <FormControlLabel required control={<Checkbox checked={assesAct} onClick={handleClickAssesAct} />} label="Акт оцінки потреб сім’ї " />
-                            <FormControlLabel required control={<Checkbox checked={conclusion} onClick={handleClickConclusion} />} label="Висновок оцінки потреби сім’ї " />
-                          </FormGroup>
-                        ) : false}
-                      </Grid>
-
-                      <Grid item xs={12} sm={6}>
-                        {isShown && state === 'wound' ? (
-                          <Paper elevation={3} sx={{ p: 2 }}>
-                            <Typography align='center' color="inherit" sx={{ fontSize: 16, fontWeight: 700, mb: 1 }}>
-                              Для надання статусу необхідний перелік документів:
-                            </Typography>
-                            <Typography sx={{ fontSize: 16 }}>
-                              — свідоцтва про народження дитини або іншого документа, що посвідчує особу дитини;
-                            </Typography>
-                            <Typography>
-                              — документа, що посвідчує особу заявника;
-                            </Typography>
-                            <Typography>
-                              — документа, що підтверджує повноваження законного представника дитини або родинні стосунки між дитиною та заявником;
-                            </Typography>
-                            <Typography>
-                              — довідки про взяття дитини на облік як внутрішньо переміщеної особи (у разі наявності);
-                            </Typography>
-                            <Typography>
-                              — паспорта громадянина України, виготовленого у формі книжечки (у разі наявності);
-                            </Typography>
-                            <Typography>
-                              — паспорта громадянина України або паспорта громадянина України для виїзду за кордон у формі е-паспорта або е-паспорта для виїзду за кордон (у разі наявності);
-                            </Typography>
-                            <Typography>
-                              — витягу з реєстру територіальної громади (у разі наявності);
-                            </Typography>
-                            <Typography>
-                              — виписки з медичної картки дитини або консультаційного висновку спеціаліста, видані після медичного обстеження та лікування дитини в закладах охорони здоров’я та науково-дослідних установах, визначених МОЗ, із зазначенням діагнозу згідно з Міжнародною класифікацією хвороб та споріднених проблем здоров’я десятого перегляду, отриманих у період здійснення воєнних дій, збройних конфліктів.
-                            </Typography>
-                          </Paper>
-                        ) : false}
-
-                        {isShown && state === 'violence' ? (
-                          <Paper elevation={3} sx={{ p: 2 }}>
-                            <Typography align='center' color="inherit" sx={{ fontSize: 16, fontWeight: 700, mb: 1 }}>
-                              Для надання статусу необхідний перелік документів:
-                            </Typography>
-                            <Typography sx={{ fontSize: 16 }}>
-                              — свідоцтва про народження дитини або іншого документа, що посвідчує особу дитини;
-                            </Typography>
-                            <Typography>
-                              — документа, що посвідчує особу заявника;
-                            </Typography>
-                            <Typography>
-                              — документа, що підтверджує повноваження законного представника дитини або родинні стосунки між дитиною та заявником;
-                            </Typography>
-                            <Typography>
-                              — довідки про взяття дитини на облік як внутрішньо переміщеної особи (у разі наявності);
-                            </Typography>
-                            <Typography>
-                              — паспорта громадянина України, виготовленого у формі книжечки (у разі наявності);
-                            </Typography>
-                            <Typography>
-                              — паспорта громадянина України або паспорта громадянина України для виїзду за кордон у формі е-паспорта або е-паспорта для виїзду за кордон (у разі наявності);
-                            </Typography>
-                            <Typography>
-                              — витягу з реєстру територіальної громади (у разі наявності);
-                            </Typography>
-                            <Typography>
-                              — заяви про вчинення щодо дитини кримінального правопорушення або про залучення дитини до провадження як потерпілої, зареєстрованої в установленому порядку у відповідних правоохоронних органах;
-                            </Typography>
-                            <Typography>
-                              — витягу з Єдиного реєстру досудових розслідувань про відкриття кримінального провадження (назалежно від результатів досудового розслідування) за зазначеною заявою про вчинення злочину щодо дитини в зоні воєнних дій та збройних конфліктів;
-                            </Typography>
-                            <Typography>
-                              — висновку експерта за результатами судової експертизи (за наявності), проведеної в ході досудового розслідування в кримінальному провадженні, якою встановлено факти фізичного, сексуального насильства щодо дитини внаслідок воєнних дій та збройних конфліктів.
-                            </Typography>
-                          </Paper>
-                        ) : false}
-                        {isShown && state === 'stolen' || state === 'participation' || state === 'maintenance' ? (
-                          <Paper elevation={3} sx={{ p: 2 }}>
-                            <Typography align='center' color="inherit" sx={{ fontSize: 16, fontWeight: 700, mb: 1 }}>
-                              Для надання статусу необхідний перелік документів:
-                            </Typography>
-                            <Typography sx={{ fontSize: 16 }}>
-                              — свідоцтва про народження дитини або іншого документа, що посвідчує особу дитини;
-                            </Typography>
-                            <Typography>
-                              — документа, що посвідчує особу заявника;
-                            </Typography>
-                            <Typography>
-                              — документа, що підтверджує повноваження законного представника дитини (у разі коли дитина постійно проживає/перебуває у закладі охорони здоров’я, закладі освіти або іншому дитячому закладі;
-                            </Typography>
-                            <Typography>
-                              — документа, що підтверджує факт перебування дитини в такому закладі) або родинні стосунки між дитиною та заявником;
-                            </Typography>
-                            <Typography>
-                              — довідки про взяття дитини на облік як внутрішньо переміщеної особи (у разі наявності);
-                            </Typography>
-                            <Typography>
-                              — паспорта громадянина України, виготовленого у формі книжечки (у разі наявності);
-                            </Typography>
-                            <Typography>
-                              — паспорта громадянина України або паспорта громадянина України для виїзду за кордон у формі е-паспорта або е-паспорта для виїзду за кордон (у разі наявності);
-                            </Typography>
-                            <Typography>
-                              — витягу з реєстру територіальної громади (у разі наявності);
-                            </Typography>
-                            <Typography>
-                              — заяви про вчинення щодо дитини кримінального правопорушення або про залучення дитини до провадження як потерпілої, зареєстрованої в установленому порядку у відповідних правоохоронних органах;
-                            </Typography>
-                            <Typography>
-                              — витягу з Єдиного реєстру досудових розслідувань про відкриття кримінального провадження (назалежно від результатів досудового розслідування) за зазначеною заявою про вчинення злочину щодо дитини в зоні воєнних дій та збройних конфліктів.
-                            </Typography>
-                          </Paper>
-                        ) : false}
-                        {isShown && state === 'psychological' ? (
-                          <Paper elevation={3} sx={{ p: 2 }}>
-                            <Typography align='center' color="inherit" sx={{ fontSize: 16, fontWeight: 700, mb: 1 }}>
-                              Для надання статусу необхідний перелік документів:
-                            </Typography>
-                            <Typography sx={{ fontSize: 16 }}>
-                              — свідоцтва про народження дитини або іншого документа, що посвідчує особу дитини;
-                            </Typography>
-                            <Typography>
-                              — документа, що посвідчує особу заявника;
-                            </Typography>
-                            <Typography>
-                              — документа, що підтверджує повноваження законного представника дитини або родинні стосунки між дитиною та заявником;
-                            </Typography>
-                            <Typography>
-                              — довідки про взяття дитини на облік як внутрішньо переміщеної особи (у разі наявності);
-                            </Typography>
-                            <Typography>
-                              — паспорта громадянина України, виготовленого у формі книжечки (у разі наявності);
-                            </Typography>
-                            <Typography>
-                              — паспорта громадянина України або паспорта громадянина України для виїзду за кордон у формі е-паспорта або е-паспорта для виїзду за кордон (у разі наявності);
-                            </Typography>
-                            <Typography>
-                              — витягу з реєстру територіальної громади (у разі наявності);
-                            </Typography>
-                            <Typography>
-                              — висновок оцінки потреб сім’ї (особи) у соціальних послугах, підготовлений центром соціальних служб для сім’ї, дітей та молоді за формою, затвердженою Мінсоцполітики.
-                            </Typography>
-                          </Paper>
-                        ) : false}
-                      </Grid>
-
-                    </Grid>
-                    <div>
-                      <Button
-                        variant="contained"
-                        onClick={handleNext}
-                        disabled={
-                          !state || ((state === 'psychological' && (assesAct === false || conclusion === false)) ? (true) : false)
-                        }
-                        size="large"
-                        sx={{ mt: 2, pr: 4, pl: 4, borderRadius: 2 }}
-                      >
-                        Далі
-                      </Button>
                       <Button
                         onClick={handleBack}
                         size="large"
@@ -603,68 +464,50 @@ export const Form = () => {
                         Назад
                       </Button>
                     </div>
-
                   </Box>
+
                 ) : null}
                 {index === 2 ? (
                   <Box>
                     <Grid container spacing={4}>
-                      <Grid item xs={12} sm={6} sx={{ mt: 1 }}>
-                        <FormControl fullWidth error={errors.region ? true : false}>
-                          <InputLabel id="region">Оберіть район *</InputLabel>
-                          <Select
-                            {...register("region")}
-                            labelId="region"
-                            id="region"
-                            name="region"
-                            required
-                            value={formData.region}
-                            onChange={handleChange}
-                            input={<OutlinedInput label="Оберіть район *" />}
-                            error={errors.region ? true : false}
-                          >
-                            {regions.map((item) => (
-                              <MenuItem
-                                key={item.id}
-                                value={item.id}
-                              >
-                                {item.title}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                          <FormHelperText sx={{ color: "#bf3333" }}>
-                            {errors.region?.message}
-                          </FormHelperText>
-                        </FormControl>
-                      </Grid>
+                      <Grid item xs={12} sm={12}>
+                        <FormControl fullWidth>
+                          <Typography align='left' color="inherit" sx={{ mb: 2 }}>
+                            Оберіть місяць:*
+                          </Typography>
+                          <ToggleButtonGroup
+                            color="primary"
+                            spacing={{ xs: 0, md: 2, lg: 3 }}
+                            value={chosenMonths}
+                            exclusive
+                            onChange={changeMonth}
+                            onClick={handleClickMonth}
+                            sx={{
+                              display: 'grid',
+                              gridGap: 8,
+                              '@media (min-width: 320px)': { gridTemplateColumns: 'repeat(2, auto)' },
+                              '@media (min-width: 400px)': { gridTemplateColumns: 'repeat(3, auto)' },
+                              '@media (min-width: 600px)': { gridTemplateColumns: 'repeat(5, auto)' },
+                              '@media (min-width: 700px)': { gridTemplateColumns: 'repeat(6, auto)' },
+                              '@media (min-width: 900px)': { gridTemplateColumns: 'repeat(6, auto)' },
+                              '@media (min-width: 1000px)': { gridTemplateColumns: 'repeat(6, auto)' },
 
-                      <Grid item xs={12} sm={6} sx={{ mt: 1 }}>
-                        <FormControl fullWidth error={errors.community_id ? true : false}>
-                          <InputLabel id="community_id">Оберіть громаду *</InputLabel>
-                          <Select
-                            {...register("community_id")}
-                            labelId="community_id"
-                            id="community_id"
-                            required
-                            value={formData.community_id}
-                            name="community_id"
-                            onChange={(e) => { selectCommunities(e) }}
-                            input={<OutlinedInput label="Оберіть громаду *" />}
-                            error={errors.community_id ? true : false}
+                              ".MuiToggleButtonGroup-grouped:not(:first-of-type)": {
+                                borderRadius: '3px',
+                                borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
+                              },
+                              ".MuiToggleButtonGroup-grouped:not(:last-of-type)": {
+                                borderRadius: '3px',
+                                borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
+                              }
+                            }}
                           >
-                            {filteredCommunities().map((item) => (
-                              <MenuItem
-                                key={item.id}
-                                value={item.id}
-                              >
-                                {item.title}
-                              </MenuItem>
+                            {month.map((month) => (
+                              <ToggleButton key={month} value={month}>
+                                {month}
+                              </ToggleButton>
                             ))}
-                          </Select>
-                          <FormHelperText sx={{ color: "#bf3333" }}>
-                            {errors.community_id?.message}
-                          </FormHelperText>
-
+                          </ToggleButtonGroup>
                         </FormControl>
                       </Grid>
 
@@ -673,12 +516,54 @@ export const Form = () => {
                           <Typography align='left' color="inherit" sx={{ mb: 2 }}>
                             Оберіть дату:*
                           </Typography>
+                          {(isShown && chosenMonths != null) ? (
+                            <ToggleButtonGroup
+                              color="primary"
+                              spacing={{ xs: 0, md: 2, lg: 3 }}
+                              value={chosenDate}
+                              exclusive
+                              onChange={changeDate}
+                              sx={{
+                                display: 'grid',
+                                gridGap: 8,
+                                '@media (min-width: 320px)': { gridTemplateColumns: 'repeat(2, auto)' },
+                                '@media (min-width: 400px)': { gridTemplateColumns: 'repeat(3, auto)' },
+                                '@media (min-width: 600px)': { gridTemplateColumns: 'repeat(5, auto)' },
+                                '@media (min-width: 700px)': { gridTemplateColumns: 'repeat(6, auto)' },
+                                '@media (min-width: 900px)': { gridTemplateColumns: 'repeat(8, auto)' },
+                                '@media (min-width: 1000px)': { gridTemplateColumns: 'repeat(9, auto)' },
+
+                                ".MuiToggleButtonGroup-grouped:not(:first-of-type)": {
+                                  borderRadius: '3px',
+                                  borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
+                                },
+                                ".MuiToggleButtonGroup-grouped:not(:last-of-type)": {
+                                  borderRadius: '3px',
+                                  borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
+                                }
+                              }}
+                            >
+                              {dates.map((date) => (
+                                <ToggleButton key={date} value={date}>
+                                  {date}
+                                </ToggleButton>
+                              ))}
+                            </ToggleButtonGroup>
+                          ) : false}
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={12} sm={12}>
+                        <FormControl fullWidth error={errors.time ? true : false}>
+                          <Typography align='left' color="inherit" sx={{ mb: 1 }}>
+                            Оберіть час:*
+                          </Typography>
+                          {(isShown && chosenMonths != null) ? (
                           <ToggleButtonGroup
                             color="primary"
-                            spacing={{ xs: 0, md: 2, lg: 3 }}
-                            value={chosenDate}
+                            value={chosenTime}
                             exclusive
-                            onChange={changeDate}
+                            onChange={changeTime}
                             sx={{
                               display: 'grid',
                               gridGap: 8,
@@ -699,52 +584,13 @@ export const Form = () => {
                               }
                             }}
                           >
-                            {dates.map((date) => (
-                              <ToggleButton key={date} value={date} disabled={!formData.community_id || date.split('.', 1) < (new Date().getDate()) || reservedDates.some((element) => (element.date === date && element.selectTime.length === times.length))}>
-                                {date}
-                              </ToggleButton>
-                            ))}
-                          </ToggleButtonGroup>
-                        </FormControl>
-                      </Grid>
-
-                      <Grid item xs={12} sm={12}>
-                        <FormControl fullWidth error={errors.time ? true : false}>
-                          <Typography align='left' color="inherit" sx={{ mb: 1 }}>
-                            Оберіть час:*
-                          </Typography>
-
-                          <ToggleButtonGroup
-                            color="primary"
-                            value={chosenTime}
-                            exclusive
-                            onChange={changeTime}
-                            sx={{
-                              display: 'grid',
-                              gridGap: 8,
-                              '@media (min-width: 320px)': { gridTemplateColumns: 'repeat(2, auto)' },
-                              '@media (min-width: 400px)': { gridTemplateColumns: 'repeat(3, auto)' },
-                              '@media (min-width: 600px)': { gridTemplateColumns: 'repeat(5, auto)' },
-                              '@media (min-width: 700px)': { gridTemplateColumns: 'repeat(6, auto)' },
-                              '@media (min-width: 900px)': { gridTemplateColumns: 'repeat(8, auto)' },
-                              '@media (min-width: 1000px)': { gridTemplateColumns: 'repeat(10, auto)' },
-
-                              ".MuiToggleButtonGroup-grouped:not(:first-of-type)": {
-                                borderRadius: '3px',
-                                borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
-                              },
-                              ".MuiToggleButtonGroup-grouped:not(:last-of-type)": {
-                                borderRadius: '3px',
-                                borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
-                              }
-                            }}
-                          >
                             {times.map((time) => (
-                              <ToggleButton key={time} value={time} sx={{ pr: 4, pl: 4 }} disabled={!formData.community_id || !chosenDate || reservedDates.some((element) => (element.date === chosenDate && element.selectTime.find(timeEl => timeEl === time)))} >
+                              <ToggleButton key={time} value={time} sx={{ pr: 4, pl: 4 }} disabled = {!formData.date}>
                                 {time}
                               </ToggleButton>
                             ))}
                           </ToggleButtonGroup>
+                          ) : false}
                         </FormControl>
                         <FormGroup sx={{ mt: 1 }}>
                           <FormControlLabel control={<Checkbox checked={personData} onClick={handleClickPersonData} />} label="Даю згоду на обробку персональних даних* " />
@@ -754,7 +600,7 @@ export const Form = () => {
                     <div>
                       <Button
                         onClick={handleSubmit}
-                        disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.patronymic || !formData.name || !formData.number || !formData.community_id || !formData.region || !formData.time || personData === false || !state || ((state === 'psychological' && (assesAct === false || conclusion === false)) ? (true) : false)}
+                        disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.patronymic || !formData.name || !formData.number || !formData.month || !formData.date || !formData.time || personData === false}
                         type="submit"
                         size="large"
                         variant="contained"
@@ -857,7 +703,7 @@ export const Form = () => {
               <CloseIcon />
             </IconButton>
             <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ textAlign: 'center', color: 'red' }}>
-              Вибачте, обрані дата та час вже зайняті. 
+              Вибачте, обрані дата та час вже зайняті.
             </Typography>
           </Box>
         </Modal>
