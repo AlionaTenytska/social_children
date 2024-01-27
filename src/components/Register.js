@@ -1,6 +1,6 @@
 import * as React from 'react';
 import axios from "axios";
-import { IconButton, Modal, Button, CssBaseline, TextField, Box, Typography, Container, Select, InputLabel, MenuItem, OutlinedInput, FormControl, Grid, FormHelperText, Stepper, Step, StepLabel, StepContent, Paper, RadioGroup, FormControlLabel, FormLabel, Radio, Checkbox, FormGroup, ButtonGroup, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { IconButton, Modal, Button, CssBaseline, TextField, Box, Typography, Container, FormControl, Grid,  Stepper, Step, StepLabel, StepContent, FormControlLabel,  Checkbox, FormGroup, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -68,8 +68,6 @@ export const Form = () => {
   const [activeStep, setActiveStep] = React.useState(0);
   const [dates, setDates] = React.useState([]);
   const [month, setMonth] = React.useState([]);
-  // const [communities, setCommunities] = React.useState([]);
-  // const [regions, setRegions] = React.useState([]);
   const [times] = React.useState([
     '9:00',
     '9:20',
@@ -92,7 +90,6 @@ export const Form = () => {
       label: 'Дата та час',
     },
   ]);
-  const [reservedDates, setReservedDates] = React.useState([]);
 
   Yup.addMethod(Yup.string, "isValidIPN", isValidIPN);
 
@@ -169,40 +166,16 @@ export const Form = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const [state, setState] = React.useState();
-  function handleChangeRadio(event) {
-    setState(event.target.value);
-  }
-
-
-
-  const [assesAct, setAssesAct] = React.useState(false);
-  function handleClickAssesAct() {
-    setAssesAct(!assesAct);
-  }
-
-  const [conclusion, setConclusion] = React.useState(false);
-  function handleClickConclusion() {
-    setConclusion(!conclusion);
-  }
-
   const [personData, setPersonData] = React.useState(false);
   function handleClickPersonData() {
     setPersonData(!personData);
   }
 
-  // const filteredCommunities = () => {
-  //   return communities.filter(item => {
-  //     return item.region_id == formData.region
-  //   })
-  // }
-  
   const [isShown, setIsShown] = React.useState(false);
 
   function handleClickMonth() {
     setIsShown(true);
   }
-
 
   function getMondayTuesdaysWednesdayFormatted(month) {
     const currentDate = new Date();
@@ -220,7 +193,6 @@ export const Form = () => {
     setDates(result);
   }
 
-
   const [chosenMonths, setChosenMonth] = React.useState('');
   const [chosenDate, setChosenDate] = React.useState('');
   const [chosenTime, setChosenTime] = React.useState('');
@@ -235,7 +207,7 @@ export const Form = () => {
 
   const changeDate = (e, newAlignment) => {
     setChosenDate(newAlignment);
-    setFormData({ ...formData, date: newAlignment, time: ''});
+    setFormData({ ...formData, date: newAlignment, time: '' });
     setChosenTime('');
   }
 
@@ -243,14 +215,6 @@ export const Form = () => {
     setChosenTime(newAlignment);
     setFormData({ ...formData, time: newAlignment });
   };
-
-  console.log(chosenMonths);
-  console.log(chosenDate);
-  console.log(chosenTime);
-  console.log("Form date:");
-  console.log(formData.month);
-  console.log(formData.date);
-  console.log(formData.time);
 
   async function getMonthFormatted() {
     const result = [];
@@ -300,15 +264,17 @@ export const Form = () => {
           },
           ".css-14yr603-MuiStepContent-root, .css-d0mviz": {
             borderLeft: '2px solid rgb(68, 202, 220)',
-            marginLeft: '15px',
+            marginLeft: '17px',
           },
           ".css-8t49rw-MuiStepConnector-line, .css-vgb7rt": {
             borderLeft: '2px solid rgb(68, 202, 220)',
-            marginLeft: '3px',
+            marginLeft: '5px',
           },
           ".MuiStepLabel-iconContainer .MuiSvgIcon-root": {
             borderRadius: "50%",
-            border: "1px solid rgb(68, 202, 220)"
+            border: "1px solid rgb(68, 202, 220)",
+            width: "1.5em",
+            height: "1.5em"
           },
           ".MuiStepLabel-iconContainer .MuiSvgIcon-root:not(.Mui-completed)": {
             color: "white"
@@ -322,7 +288,9 @@ export const Form = () => {
             padding: "3px",
             borderRadius: "50%",
             border: "1px solid rgb(68, 202, 220)",
-            marginY: "-3px"
+            marginY: "-3px",
+            width: "1.5em",
+            height: "1.5em"
           },
           ".MuiStepLabel-iconContainer .Mui-active .MuiStepIcon-text": {
             fill: "white"
@@ -559,37 +527,37 @@ export const Form = () => {
                             Оберіть час:*
                           </Typography>
                           {(isShown && chosenMonths != null) ? (
-                          <ToggleButtonGroup
-                            color="primary"
-                            value={chosenTime}
-                            exclusive
-                            onChange={changeTime}
-                            sx={{
-                              display: 'grid',
-                              gridGap: 8,
-                              '@media (min-width: 320px)': { gridTemplateColumns: 'repeat(2, auto)' },
-                              '@media (min-width: 400px)': { gridTemplateColumns: 'repeat(3, auto)' },
-                              '@media (min-width: 600px)': { gridTemplateColumns: 'repeat(5, auto)' },
-                              '@media (min-width: 700px)': { gridTemplateColumns: 'repeat(6, auto)' },
-                              '@media (min-width: 900px)': { gridTemplateColumns: 'repeat(8, auto)' },
-                              '@media (min-width: 1000px)': { gridTemplateColumns: 'repeat(9, auto)' },
+                            <ToggleButtonGroup
+                              color="primary"
+                              value={chosenTime}
+                              exclusive
+                              onChange={changeTime}
+                              sx={{
+                                display: 'grid',
+                                gridGap: 8,
+                                '@media (min-width: 320px)': { gridTemplateColumns: 'repeat(2, auto)' },
+                                '@media (min-width: 400px)': { gridTemplateColumns: 'repeat(3, auto)' },
+                                '@media (min-width: 600px)': { gridTemplateColumns: 'repeat(5, auto)' },
+                                '@media (min-width: 700px)': { gridTemplateColumns: 'repeat(6, auto)' },
+                                '@media (min-width: 900px)': { gridTemplateColumns: 'repeat(8, auto)' },
+                                '@media (min-width: 1000px)': { gridTemplateColumns: 'repeat(9, auto)' },
 
-                              ".MuiToggleButtonGroup-grouped:not(:first-of-type)": {
-                                borderRadius: '3px',
-                                borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
-                              },
-                              ".MuiToggleButtonGroup-grouped:not(:last-of-type)": {
-                                borderRadius: '3px',
-                                borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
-                              }
-                            }}
-                          >
-                            {times.map((time) => (
-                              <ToggleButton key={time} value={time} sx={{ pr: 4, pl: 4 }} disabled = {!formData.date}>
-                                {time}
-                              </ToggleButton>
-                            ))}
-                          </ToggleButtonGroup>
+                                ".MuiToggleButtonGroup-grouped:not(:first-of-type)": {
+                                  borderRadius: '3px',
+                                  borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
+                                },
+                                ".MuiToggleButtonGroup-grouped:not(:last-of-type)": {
+                                  borderRadius: '3px',
+                                  borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
+                                }
+                              }}
+                            >
+                              {times.map((time) => (
+                                <ToggleButton key={time} value={time} sx={{ pr: 4, pl: 4 }} disabled={!formData.date}>
+                                  {time}
+                                </ToggleButton>
+                              ))}
+                            </ToggleButtonGroup>
                           ) : false}
                         </FormControl>
                         <FormGroup sx={{ mt: 1 }}>
