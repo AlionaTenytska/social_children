@@ -6,7 +6,7 @@ const defaultTheme = createTheme(
         palette: {
             mode: 'light',
             primary: {
-                main: 'rgb(255, 248, 28)',
+                main: 'rgb(95, 255, 95)',
             },
             error: {
                 main: '#ff0000',
