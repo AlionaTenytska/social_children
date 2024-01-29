@@ -8,6 +8,9 @@
 }
 
 .appBar {
-    background: radial-gradient(circle, rgb(158, 255, 186) 0%, rgb(50, 214, 50) 100%);
-    /* background: radial-gradient(circle, rgb(84, 255, 50) 100%);  */
+    background: radial-gradient(circle, rgb(158, 255, 186) 0%, rgb(22, 150, 22) 100%);
+}
+
+.text{
+    color: #000;
 }

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import axios from "axios";
-import { IconButton, Modal, Button, CssBaseline, TextField, Box, Typography, Container, FormControl, Grid,  Stepper, Step, StepLabel, StepContent, FormControlLabel,  Checkbox, FormGroup, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { IconButton, Modal, Button, CssBaseline, TextField, Box, Typography, Container, FormControl, Grid, Stepper, Step, StepLabel, StepContent, FormControlLabel, Checkbox, FormGroup, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -263,16 +263,16 @@ export const Form = () => {
             fontSize: 16,
           },
           ".css-14yr603-MuiStepContent-root, .css-d0mviz": {
-            borderLeft: '2px solid rgb(95, 255, 95)',
+            borderLeft: '2px solid rgb(22, 150, 22)',
             marginLeft: '17px',
           },
           ".css-8t49rw-MuiStepConnector-line, .css-vgb7rt": {
-            borderLeft: '2px solid rgb(95, 255, 95)',
+            borderLeft: '2px solid rgb(22, 150, 22)',
             marginLeft: '5px',
           },
           ".MuiStepLabel-iconContainer .MuiSvgIcon-root": {
             borderRadius: "50%",
-            border: "1px solid rgb(95, 255, 95)",
+            border: "1px solid rgb(22, 150, 22)",
             width: "1.5em",
             height: "1.5em"
           },
@@ -280,14 +280,14 @@ export const Form = () => {
             color: "white"
           },
           ".MuiStepLabel-iconContainer .MuiStepIcon-text": {
-            fill: "rgb(95, 255, 95)",
+            fill: "rgb(22, 150, 22)",
             fontWeight: 500
           },
           ".MuiStepLabel-iconContainer .MuiSvgIcon-root.Mui-active": {
-            color: "rgb(95, 255, 95)",
+            color: "rgb(22, 150, 22)",
             padding: "3px",
             borderRadius: "50%",
-            border: "1px solid rgb(95, 255, 95)",
+            border: "1px solid rgb(22, 150, 22)",
             marginY: "-3px",
             width: "1.5em",
             height: "1.5em"
@@ -479,12 +479,14 @@ export const Form = () => {
                         </FormControl>
                       </Grid>
 
-                      <Grid item xs={12} sm={12}>
-                        <FormControl fullWidth>
-                          <Typography align='left' color="inherit" sx={{ mb: 2 }}>
-                            Оберіть дату:*
-                          </Typography>
-                          {(isShown && chosenMonths != null) ? (
+
+
+                      {(isShown && chosenMonths != null) ? (
+                        <Grid item xs={12} sm={12}>
+                          <FormControl fullWidth>
+                            <Typography align='left' color="inherit" sx={{ mb: 2 }}>
+                              Оберіть дату:*
+                            </Typography>
                             <ToggleButtonGroup
                               color="primary"
                               spacing={{ xs: 0, md: 2, lg: 3 }}
@@ -517,16 +519,18 @@ export const Form = () => {
                                 </ToggleButton>
                               ))}
                             </ToggleButtonGroup>
-                          ) : false}
-                        </FormControl>
-                      </Grid>
+                          </FormControl>
+                        </Grid>
+                      ) : false}
 
-                      <Grid item xs={12} sm={12}>
-                        <FormControl fullWidth error={errors.time ? true : false}>
-                          <Typography align='left' color="inherit" sx={{ mb: 1 }}>
-                            Оберіть час:*
-                          </Typography>
-                          {(isShown && chosenMonths != null) ? (
+
+
+                      {(isShown && chosenMonths != null) ? (
+                        <Grid item xs={12} sm={12}>
+                          <FormControl fullWidth error={errors.time ? true : false}>
+                            <Typography align='left' color="inherit" sx={{ mb: 1 }}>
+                              Оберіть час:*
+                            </Typography>
                             <ToggleButtonGroup
                               color="primary"
                               value={chosenTime}
@@ -558,13 +562,16 @@ export const Form = () => {
                                 </ToggleButton>
                               ))}
                             </ToggleButtonGroup>
-                          ) : false}
-                        </FormControl>
-                        <FormGroup sx={{ mt: 1 }}>
+                          </FormControl>
+                        </Grid>
+                      ) : false}
+                      <Grid item xs={12} sm={12} sx={{ mt: -2 }}>
+                        <FormGroup >
                           <FormControlLabel control={<Checkbox checked={personData} onClick={handleClickPersonData} />} label="Даю згоду на обробку персональних даних* " />
                         </FormGroup>
                       </Grid>
                     </Grid>
+
                     <div>
                       <Button
                         onClick={handleSubmit}

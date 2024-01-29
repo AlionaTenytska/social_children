@@ -1,16 +1,20 @@
 import * as React from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { dark } from '@mui/material/styles/createPalette';
 
 const defaultTheme = createTheme(
     {
         palette: {
-            mode: 'light',
+            // mode: 'light',
             primary: {
-                main: 'rgb(95, 255, 95)',
+                main: 'rgb(22, 150, 22)',
             },
             error: {
                 main: '#ff0000',
             },
+            text: {
+                main: dark,
+            }
         },
         Button: {
             size: 'large',

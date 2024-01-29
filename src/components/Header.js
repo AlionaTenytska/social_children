@@ -16,10 +16,10 @@ export const Header = () => {
             <img src="/images/Gerb_goroda_Sumy2.png" className='logo' alt="Logo" />
           </Grid>
           <Grid item>
-            <Typography variant="h6" align='center' >
+            <Typography variant="h6" align='center' className='text'>
               СУМСЬКИЙ МІСЬКИЙ 
             </Typography>
-            <Typography variant="h6" align='center' sx={{ mb: 2 }}>
+            <Typography variant="h6" align='center' sx={{ mb: 2 }} className='text'>
               ЦЕНТР СОЦІАЛЬНИХ СЛУЖБ
             </Typography>
           </Grid>
