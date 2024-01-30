@@ -160,6 +160,12 @@ export const Form = () => {
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    axios.get(`${baseURL}/applications/dates`)
+      .then((response) => {
+        setReservedDates(response.data);
+      })
+      .catch(function (error) {
+      })
   };
 
   const handleBack = () => {
@@ -196,6 +202,7 @@ export const Form = () => {
   const [chosenMonths, setChosenMonth] = React.useState('');
   const [chosenDate, setChosenDate] = React.useState('');
   const [chosenTime, setChosenTime] = React.useState('');
+  const [reservedDates, setReservedDates] = React.useState([]);
 
   const changeMonth = (e, newAlignment) => {
     setChosenMonth(newAlignment);
@@ -471,14 +478,14 @@ export const Form = () => {
                             }}
                           >
                             {month.map((month) => (
-                              <ToggleButton key={month} value={month}>
+                              <ToggleButton key={month} value={month} disabled={ new Date().getMonth() === (monthNamesUkrainian.indexOf(month)) }>
                                 {month}
                               </ToggleButton>
                             ))}
                           </ToggleButtonGroup>
                         </FormControl>
                       </Grid>
-
+                      {/* disabled={ reservedDates.some((element) => (parseInt(element.date.split('.')[1]) === (monthNamesUkrainian.indexOf(month)+1) && (element.hasOwnProperty('selectTime') ? element.selectTime.length === times.length : false) )) } */}
 
 
                       {(isShown && chosenMonths != null) ? (
@@ -514,7 +521,7 @@ export const Form = () => {
                               }}
                             >
                               {dates.map((date) => (
-                                <ToggleButton key={date} value={date}>
+                                <ToggleButton key={date} value={date} disabled={reservedDates.some((element) => (element.date === date && (element.hasOwnProperty('selectTime') ? element.selectTime.length === times.length : false)))}>
                                   {date}
                                 </ToggleButton>
                               ))}
@@ -557,7 +564,7 @@ export const Form = () => {
                               }}
                             >
                               {times.map((time) => (
-                                <ToggleButton key={time} value={time} sx={{ pr: 4, pl: 4 }} disabled={!formData.date}>
+                                <ToggleButton key={time} value={time} sx={{ pr: 4, pl: 4 }} disabled={!formData.date || reservedDates.some((element) => (element.date === chosenDate && (element.hasOwnProperty('selectTime') ? element.selectTime.find(timeEl => timeEl === time) : false))) }>
                                   {time}
                                 </ToggleButton>
                               ))}
