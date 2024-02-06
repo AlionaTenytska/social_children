@@ -42,43 +42,18 @@ const initialFormData = Object.freeze({
   name: '',
   patronymic: '',
   number: '',
+  year: '',
   month: '',
   date: '',
   time: ''
 });
 
-const monthNamesUkrainian = [
-  'Січень',
-  'Лютий',
-  'Березень',
-  'Квітень',
-  'Травень',
-  'Червень',
-  'Липень',
-  'Серпень',
-  'Вересень',
-  'Жовтень',
-  'Листопад',
-  'Грудень',
-];
+
 
 export const Form = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = React.useState(initialFormData);
   const [activeStep, setActiveStep] = React.useState(0);
-  const [dates, setDates] = React.useState([]);
-  const [month, setMonth] = React.useState([]);
-  const [times] = React.useState([
-    '9:00',
-    '9:20',
-    '9:40',
-    '10:00',
-    '10:20',
-    '10:40',
-    '11:00',
-    '11:20',
-    '11:40',
-  ]);
   const [steps] = React.useState([
     {
       label: 'Інформаційна довідка',
@@ -110,8 +85,8 @@ export const Form = () => {
       .matches(/^([^А-Я,а-я]*)$/, "Не коректно введені дані")
       .required("Це обов'язкове поле")
       .min(10, 'РНОКПП (ІПН) складається з десяти цифр')
-      .max(10, 'РНОКПП (ІПН) складається з десяти цифр')
-      .isValidIPN('Не вірно вказаний РНОКПП (ІПН)'),
+      .max(10, 'РНОКПП (ІПН) складається з десяти цифр'),
+      // .isValidIPN('Не вірно вказаний РНОКПП (ІПН)'),
     month: Yup.string()
       .required("Це обов'язкове поле")
       .typeError("Це обов'язкове поле"),
@@ -178,43 +153,47 @@ export const Form = () => {
   }
 
   const [isShown, setIsShown] = React.useState(false);
-
-  function handleClickMonth() {
+  const [isShown2, setIsShown2] = React.useState(false);
+  const [isShown3, setIsShown3] = React.useState(false);
+  
+  function handleClickYear() {
     setIsShown(true);
   }
 
-  function getMondayTuesdaysWednesdayFormatted(month) {
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const result = [];
-    const monthId = monthNamesUkrainian.indexOf(month);
-    let date = new Date(year, monthId, 1);
-    while (date.getMonth() === monthId) {
-      if (date.getDay() === 1 || date.getDay() === 2 || date.getDay() === 3) {
-        const formattedDate = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
-        result.push(formattedDate);
-      }
-      date.setDate(date.getDate() + 1);
-    }
-    setDates(result);
+  function handleClickMonth() {
+    setIsShown2(true);
   }
 
+  function handleClickDate() {
+    setIsShown3(true);
+  }
+
+  
+  const [chosenYear, setChosenYear] = React.useState('');
   const [chosenMonths, setChosenMonth] = React.useState('');
   const [chosenDate, setChosenDate] = React.useState('');
   const [chosenTime, setChosenTime] = React.useState('');
+
   const [reservedDates, setReservedDates] = React.useState([]);
+
+  const changeYear = (e, newAlignment) => {
+    setChosenYear(newAlignment);
+    setFormData({ ...formData, year: newAlignment, month: '', date: '', time: '' });
+    setChosenMonth('');
+    setChosenDate('');
+    setChosenTime('');
+  };
 
   const changeMonth = (e, newAlignment) => {
     setChosenMonth(newAlignment);
-    setFormData({ ...formData, month: newAlignment, date: '', time: '' });
-    getMondayTuesdaysWednesdayFormatted(newAlignment);
+    setFormData({ ...formData, month: newAlignment, date: '', time: ''});
     setChosenDate('');
     setChosenTime('');
   }
 
   const changeDate = (e, newAlignment) => {
     setChosenDate(newAlignment);
-    setFormData({ ...formData, date: newAlignment, time: '' });
+    setFormData({ ...formData, date: newAlignment, time: ''});
     setChosenTime('');
   }
 
@@ -223,21 +202,11 @@ export const Form = () => {
     setFormData({ ...formData, time: newAlignment });
   };
 
-  async function getMonthFormatted() {
-    const result = [];
-    for (let i = 6; i < monthNamesUkrainian.length; i++) {
-      result.push(monthNamesUkrainian[i]);
-    }
-    setMonth(result);
-  }
+  console.log("Choosen:", chosenYear, chosenMonths, chosenDate, chosenTime);
+  console.log("In request:", formData.year, formData.month, formData.date, formData.time);
 
-  React.useEffect(() => {
-    const expensesListResp = async () => {
-      await getMonthFormatted();
-    }
-    expensesListResp();
-  }, []);
-
+  
+  
   return (
     <Theme>
       <CssBaseline />
@@ -248,7 +217,7 @@ export const Form = () => {
         </Typography>
 
         <Typography align='center' color="inherit" sx={{ mb: 4, fontSize: 16 }}>
-          для складання акту оцінки потреб сім’ї/особи для надання статусу дитині, яка постраждала в наслідок воєнних дій та збройних конфліктів
+          для складання акту оцінки потреб сім’ї/особи для надання статусу дитині, яка постраждала внаслідок воєнних дій та збройних конфліктів
         </Typography>
 
         <Stepper activeStep={activeStep} orientation="vertical" sx={{
@@ -316,10 +285,11 @@ export const Form = () => {
 
                       <Grid item xs={12} sm={6} >
                         <Typography align='left' color="inherit" sx={{ mb: 4, fontSize: 16 }}>
-                          Звертаємо вашу увагу, що звертатися можуть тільки мешканці Сумської міської територіальної громади.
+                        Звертаємо вашу увагу, що звертатися можуть тільки мешканці 
+                        Сумської міської територіальної громади, в тому числі внутрішньо-переміщені особи, які зареєстровані на території громади.
                         </Typography>
                         <Typography align='left' color="inherit" sx={{ mb: 4, fontSize: 16 }}>
-                          <b>Адреса:</b> м. Суми, вул. Харківська 42
+                          <b>Адреса:</b> м. Суми, вул. Харківська, 42
                         </Typography>
                       </Grid>
 
@@ -329,7 +299,10 @@ export const Form = () => {
                           Для складання акту оцінки потреб сім’ї/особи при собі необхідно мати оригінали документіви:
                         </Typography>
                         <Typography sx={{ fontSize: 16 }}>
-                          — свідоцтво про народження дитини або інший документ, що посвідчує особу дитини;
+                          — паспорт заявника;
+                        </Typography>
+                        <Typography>
+                        — свідоцтво про народження дитини або інший документ, що посвідчує особу дитини;
                         </Typography>
                         <Typography>
                           — документ, що підтверджує повноваження законного представника дитини або родинні стосунки між дитиною та заявником;
@@ -445,6 +418,48 @@ export const Form = () => {
                 {index === 2 ? (
                   <Box>
                     <Grid container spacing={4}>
+                    <Grid item xs={12} sm={12}>
+                        <FormControl fullWidth>
+                          <Typography align='left' color="inherit" sx={{ mb: 2 }}>
+                            Оберіть рік:*
+                          </Typography>
+                          <ToggleButtonGroup
+                            color="primary"
+                            spacing={{ xs: 0, md: 2, lg: 3 }}
+                            value={chosenYear}
+                            exclusive
+                            onChange={changeYear}
+                            onClick={handleClickYear}
+                            sx={{
+                              display: 'grid',
+                              gridGap: 8,
+                              '@media (min-width: 320px)': { gridTemplateColumns: 'repeat(2, auto)' },
+                              '@media (min-width: 400px)': { gridTemplateColumns: 'repeat(3, auto)' },
+                              '@media (min-width: 600px)': { gridTemplateColumns: 'repeat(5, auto)' },
+                              '@media (min-width: 700px)': { gridTemplateColumns: 'repeat(6, auto)' },
+                              '@media (min-width: 900px)': { gridTemplateColumns: 'repeat(6, auto)' },
+                              '@media (min-width: 1000px)': { gridTemplateColumns: 'repeat(6, auto)' },
+
+                              ".MuiToggleButtonGroup-grouped:not(:first-of-type)": {
+                                borderRadius: '3px',
+                                borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
+                              },
+                              ".MuiToggleButtonGroup-grouped:not(:last-of-type)": {
+                                borderRadius: '3px',
+                                borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
+                              }
+                            }}
+                          >
+                            {reservedDates.map((item) => (
+                              <ToggleButton key={item.year} value={item.year} disabled={ new Date().getFullYear() > item.year || item.disabled === true }>
+                                {item.year}
+                              </ToggleButton>
+                            ))}
+                          </ToggleButtonGroup>
+                        </FormControl>
+                      </Grid>
+
+                      {(isShown && ((chosenYear === null ) ? false : true)) ? (
                       <Grid item xs={12} sm={12}>
                         <FormControl fullWidth>
                           <Typography align='left' color="inherit" sx={{ mb: 2 }}>
@@ -477,18 +492,20 @@ export const Form = () => {
                               }
                             }}
                           >
-                            {month.map((month) => (
-                              <ToggleButton key={month} value={month} disabled={ new Date().getMonth() === (monthNamesUkrainian.indexOf(month)) }>
-                                {month}
+                            {reservedDates.filter(item => item.year === chosenYear).flatMap( item  => item.month.map((monthObj) => ( 
+                              <ToggleButton key={monthObj.month} value={monthObj.month} disabled={ monthObj.disabled === true || 
+                              (( item.year === 2024 && (monthObj.month === 'Cічень' || monthObj.month === 'Лютий' || monthObj.month === 'Березень' 
+                              || monthObj.month === 'Квітень' || monthObj.month === 'Травень' || monthObj.month === 'Червень' 
+                              || monthObj.month === 'Липень' || monthObj.month === 'Серпень' || monthObj.month === 'Вересень')) ? true : false) }>
+                                {monthObj.month}                    
                               </ToggleButton>
-                            ))}
+                            )))}
                           </ToggleButtonGroup>
                         </FormControl>
                       </Grid>
-                      {/* disabled={ reservedDates.some((element) => (parseInt(element.date.split('.')[1]) === (monthNamesUkrainian.indexOf(month)+1) && (element.hasOwnProperty('selectTime') ? element.selectTime.length === times.length : false) )) } */}
+                      ) : false}
 
-
-                      {(isShown && chosenMonths != null) ? (
+                      {(isShown2 && ((chosenMonths === null || chosenYear === null || chosenMonths === '') ? false : true)) ? (
                         <Grid item xs={12} sm={12}>
                           <FormControl fullWidth>
                             <Typography align='left' color="inherit" sx={{ mb: 2 }}>
@@ -500,6 +517,7 @@ export const Form = () => {
                               value={chosenDate}
                               exclusive
                               onChange={changeDate}
+                              onClick={handleClickDate}
                               sx={{
                                 display: 'grid',
                                 gridGap: 8,
@@ -520,9 +538,9 @@ export const Form = () => {
                                 }
                               }}
                             >
-                              {dates.map((date) => (
-                                <ToggleButton key={date} value={date} disabled={reservedDates.some((element) => (element.date === date && (element.hasOwnProperty('selectTime') ? element.selectTime.length === times.length : false)))}>
-                                  {date}
+                              {reservedDates.filter(item => item.year === chosenYear).flatMap( item  => item.month.find( monthObj  =>  monthObj.month === chosenMonths)?.days.map( (dayObj) =>
+                                <ToggleButton key={dayObj.day} value={dayObj.day} disabled={ dayObj.disabled === true }>
+                                  {dayObj.day}
                                 </ToggleButton>
                               ))}
                             </ToggleButtonGroup>
@@ -532,7 +550,7 @@ export const Form = () => {
 
 
 
-                      {(isShown && chosenMonths != null) ? (
+                      {(isShown3 && ((chosenMonths === null || chosenYear === null || chosenDate === null || chosenMonths === '' || chosenDate === '') ? false : true)) ? (
                         <Grid item xs={12} sm={12}>
                           <FormControl fullWidth error={errors.time ? true : false}>
                             <Typography align='left' color="inherit" sx={{ mb: 1 }}>
@@ -563,15 +581,16 @@ export const Form = () => {
                                 }
                               }}
                             >
-                              {times.map((time) => (
-                                <ToggleButton key={time} value={time} sx={{ pr: 4, pl: 4 }} disabled={!formData.date || reservedDates.some((element) => (element.date === chosenDate && (element.hasOwnProperty('selectTime') ? element.selectTime.find(timeEl => timeEl === time) : false))) }>
-                                  {time}
+                              {reservedDates.filter(item => item.year === chosenYear).flatMap( item  => item.month.find( monthObj  =>  monthObj.month === chosenMonths)?.days.find( dayObj  => dayObj.day === chosenDate)?.times.map( (timeObj) =>
+                                <ToggleButton key={timeObj.time} value={timeObj.time} sx={{ pr: 4, pl: 4 }} disabled={ timeObj.disabled === true }>
+                                  {timeObj.time}
                                 </ToggleButton>
                               ))}
                             </ToggleButtonGroup>
                           </FormControl>
                         </Grid>
                       ) : false}
+
                       <Grid item xs={12} sm={12} sx={{ mt: -2 }}>
                         <FormGroup >
                           <FormControlLabel control={<Checkbox checked={personData} onClick={handleClickPersonData} />} label="Даю згоду на обробку персональних даних* " />
@@ -582,7 +601,7 @@ export const Form = () => {
                     <div>
                       <Button
                         onClick={handleSubmit}
-                        disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.patronymic || !formData.name || !formData.number || !formData.month || !formData.date || !formData.time || personData === false}
+                        disabled={(Object.keys(errors) != 0) || !formData.surname || !formData.patronymic || !formData.name || !formData.number || !formData.year || !formData.month  || !formData.date || !formData.time || personData === false}
                         type="submit"
                         size="large"
                         variant="contained"

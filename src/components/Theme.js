@@ -12,9 +12,6 @@ const defaultTheme = createTheme(
             error: {
                 main: '#ff0000',
             },
-            text: {
-                main: dark,
-            }
         },
         Button: {
             size: 'large',
