@@ -1,7 +1,8 @@
 import * as React from 'react';
 import axios from "axios";
-import { IconButton, Modal, Button, CssBaseline, TextField, Box, Typography, Container, FormControl, Grid, Stepper, Step, StepLabel, StepContent, FormControlLabel, Checkbox, FormGroup, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { Divider, IconButton, Modal, Button, CssBaseline, TextField, Box, Typography, Container, FormControl, Grid, Stepper, Step, StepLabel, StepContent, FormControlLabel, Checkbox, FormGroup, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
@@ -85,8 +86,8 @@ export const Form = () => {
       .matches(/^([^А-Я,а-я]*)$/, "Не коректно введені дані")
       .required("Це обов'язкове поле")
       .min(10, 'РНОКПП (ІПН) складається з десяти цифр')
-      .max(10, 'РНОКПП (ІПН) складається з десяти цифр'),
-      // .isValidIPN('Не вірно вказаний РНОКПП (ІПН)'),
+      .max(10, 'РНОКПП (ІПН) складається з десяти цифр')
+      .isValidIPN('Не вірно вказаний РНОКПП (ІПН)'),
     month: Yup.string()
       .required("Це обов'язкове поле")
       .typeError("Це обов'язкове поле"),
@@ -284,19 +285,21 @@ export const Form = () => {
                     <Grid container spacing={4}>
 
                       <Grid item xs={12} sm={6} >
-                        <Typography align='left' color="inherit" sx={{ mb: 4, fontSize: 16 }}>
-                        Звертаємо вашу увагу, що звертатися можуть тільки мешканці 
-                        Сумської міської територіальної громади, в тому числі внутрішньо-переміщені особи, які зареєстровані на території громади.
+                      <Divider sx = {{color: 'rgb(22, 150, 22)', fontWeight: 'bold'}}>ЗВЕРТАЄМО ВАШУ УВАГУ</Divider>
+                        <Typography align='left' color="inherit" sx={{ mb: 2, mt: 2,  fontSize: 16 }}>               
+                         Звертатися можуть лише мешканці
+                        <b> Сумської міської територіальної громади</b>, зокрема внутрішньо переміщені особи, які зареєстровані на території громади.
                         </Typography>
-                        <Typography align='left' color="inherit" sx={{ mb: 4, fontSize: 16 }}>
-                          <b>Адреса:</b> м. Суми, вул. Харківська, 42
+                        <Divider sx = {{color: 'rgb(22, 150, 22)', fontWeight: 'bold'}}>АДРЕСА</Divider>
+                        <Typography align='left' color="inherit" sx={{ mt: 2, fontSize: 16 }}>
+                            вулиця Харківська, 42, Суми, Сумська область, 40000
                         </Typography>
                       </Grid>
 
                       <Grid item xs={12} sm={6}>
-
-                        <Typography align='left' color="inherit" sx={{ fontSize: 16, fontWeight: 700, mb: 1 }}>
-                          Для складання акту оцінки потреб сім’ї/особи при собі необхідно мати оригінали документіви:
+                      <Divider sx = {{color: 'rgb(22, 150, 22)', fontWeight: 'bold'}}>НЕОБХІДНІ ДОКУМЕНТИ</Divider>
+                        <Typography align='left' color="inherit" sx={{ fontSize: 16, mt: 2, fontWeight: 700, mb: 1 }}>
+                          Для складання акту оцінки потреб сім’ї/особи при собі необхідно мати оригінали документів:
                         </Typography>
                         <Typography sx={{ fontSize: 16 }}>
                           — паспорт заявника;
@@ -547,8 +550,6 @@ export const Form = () => {
                           </FormControl>
                         </Grid>
                       ) : false}
-
-
 
                       {(isShown3 && ((chosenMonths === null || chosenYear === null || chosenDate === null || chosenMonths === '' || chosenDate === '') ? false : true)) ? (
                         <Grid item xs={12} sm={12}>
