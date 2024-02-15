@@ -288,7 +288,7 @@ export const Form = () => {
                       <Divider sx = {{color: 'rgb(22, 150, 22)', fontWeight: 'bold'}}>ЗВЕРТАЄМО ВАШУ УВАГУ</Divider>
                         <Typography align='left' color="inherit" sx={{ mb: 2, mt: 2,  fontSize: 16 }}>               
                          Звертатися можуть лише мешканці
-                        <b> Сумської міської територіальної громади</b>, зокрема внутрішньо переміщені особи, які зареєстровані на території громади.
+                        <b> Сумської міської територіальної громади</b>, а також внутрішньо переміщені особи, які зареєстровані на території громади.
                         </Typography>
                         <Divider sx = {{color: 'rgb(22, 150, 22)', fontWeight: 'bold'}}>АДРЕСА</Divider>
                         <Typography align='left' color="inherit" sx={{ mt: 2, fontSize: 16 }}>
